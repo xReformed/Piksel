@@ -1,0 +1,10 @@
+# Normalize line endings to LF (matches Prettier's endOfLine setting on Windows)
+* text=auto eol=lf
+
+# Binary assets
+*.onnx binary
+*.wasm binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary

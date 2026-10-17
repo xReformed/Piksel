@@ -1,0 +1,1 @@
+A browser-based AI image upscaler powered by Real-ESRGAN, ONNX Runtime Web, and WebGPU. Images are processed locally on your own GPU, so nothing is uploaded to a server, and there are no credits, watermarks, or daily limits. It adapts to your hardware automatically, from high-end GPUs down to older cards like the GTX 1050 Ti, with a CPU fallback for devices without WebGPU.
