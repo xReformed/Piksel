@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -17,6 +18,16 @@ export default defineConfig({
   },
   preview: {
     headers: crossOriginIsolationHeaders,
+  },
+  build: {
+    rolldownOptions: {
+      // Two pages: the landing page and the upscaler at /app (vercel.json's cleanUrls serves
+      // app.html there). Separate entries keep the upscaler's code off the landing page.
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        app: fileURLToPath(new URL('./app.html', import.meta.url)),
+      },
+    },
   },
   optimizeDeps: {
     // onnxruntime-web locates its .wasm files via `new URL(..., import.meta.url)`.

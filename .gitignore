@@ -26,6 +26,10 @@ dist-ssr
 *.onnx
 public/models/
 
+# Python environment for scripts/convert_models.py
+.venv/
+__pycache__/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
