@@ -13,20 +13,21 @@ export function Hero() {
           id="hero-heading"
           className="text-4xl leading-[1.05] font-bold tracking-[-0.04em] text-balance text-slate-950 sm:text-6xl lg:text-7xl"
         >
-          Sharper images.
+          Better images.
           <br />
-          Powered by your GPU.
+          Without the upload.
         </h1>
-        <p className="mt-5 text-lg text-slate-500 sm:text-xl">
-          AI upscaling on your device. Your images stay yours.
+        <p className="mt-5 max-w-2xl text-lg text-pretty text-slate-500 sm:text-xl">
+          Free AI image tools that run on your own GPU. Every edit happens in your browser, so your
+          images never leave your device.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <a href="/app" className={`${primaryButton} group px-6 py-3`}>
-            Try it now
+          <a href="/upscaler" className={`${primaryButton} group px-6 py-3`}>
+            Upscale an image
             <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
           </a>
-          <a href="#how-it-works" className={`${secondaryButton} px-6 py-3`}>
-            How it works
+          <a href="#tools" className={`${secondaryButton} px-6 py-3`}>
+            See all tools
           </a>
         </div>
       </div>

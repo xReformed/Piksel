@@ -1,6 +1,6 @@
 import type { DeviceInfo } from '../../lib/device.ts'
 import { formatScale } from '../../lib/image.ts'
-import { models } from '../../lib/models.ts'
+import { getModel, modelForScale, models } from '../../lib/models.ts'
 import {
   advancedDefaults,
   type OutputFormat,
@@ -37,6 +37,8 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   const modelChosen = settings.model !== 'auto'
   const customScale = settings.customScale
+  // Auto switches models to reach any size up to 4×; a chosen model is limited to its own scale.
+  const customScaleMax = modelChosen ? plan.model.scale : 4
   const tileTooBig =
     settings.tileSize !== 'auto' &&
     plan.maxTileSize !== null &&
@@ -51,8 +53,8 @@ export function SettingsPanel({
         hint={
           customScale !== null
             ? `Using a custom scale of ${formatScale(plan.outputScale)}× from Advanced settings.`
-            : plan.model.scale < 4
-              ? `${plan.model.name} only goes up to 2×.`
+            : plan.model.scale === 2
+              ? `Uses ${plan.model.name}, made specifically for 2×.`
               : undefined
         }
       >
@@ -62,9 +64,16 @@ export function SettingsPanel({
           disabled={customScale !== null}
           options={[
             { value: 2, label: '2×' },
-            { value: 4, label: '4×', disabled: plan.model.scale < 4 },
+            { value: 4, label: '4×' },
           ]}
-          onChange={(scale) => onChange({ scale })}
+          onChange={(scale) =>
+            // A chosen model switches to its twin for that size (x4plus ⇄ x2plus) if it has one.
+            onChange(
+              settings.model === 'auto'
+                ? { scale }
+                : { scale, model: modelForScale(settings.model, scale) },
+            )
+          }
         />
       </Field>
 
@@ -138,7 +147,13 @@ export function SettingsPanel({
             <Select
               id="model"
               value={settings.model}
-              onChange={(model) => onChange({ model: model as Settings['model'] })}
+              onChange={(value) => {
+                const model = value as Settings['model']
+                // A 2× model can only make 2×, so match the factor to it.
+                onChange(
+                  model !== 'auto' && getModel(model).scale === 2 ? { model, scale: 2 } : { model },
+                )
+              }}
             >
               <option value="auto">{modelChosen ? 'Auto' : `Auto (${plan.model.name})`}</option>
               {models.map((model) => (
@@ -178,7 +193,7 @@ export function SettingsPanel({
                 label="Use a custom scale"
                 checked={customScale !== null}
                 onChange={(on) =>
-                  onChange({ customScale: on ? (plan.model.scale === 4 ? 3 : 1.5) : null })
+                  onChange({ customScale: on ? (customScaleMax === 4 ? 3 : 1.5) : null })
                 }
               />
             }
@@ -189,9 +204,9 @@ export function SettingsPanel({
                 <Range
                   id="custom-scale"
                   min={1.1}
-                  max={plan.model.scale}
+                  max={customScaleMax}
                   step={0.1}
-                  value={Math.min(customScale, plan.model.scale)}
+                  value={Math.min(customScale, customScaleMax)}
                   onChange={(value) => onChange({ customScale: value })}
                 />
                 <span className="w-10 text-right text-sm font-medium text-slate-700 tabular-nums">

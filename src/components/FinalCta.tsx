@@ -19,7 +19,8 @@ function PixelCluster({ className }: { className: string }) {
   )
 }
 
-export function FinalCta() {
+// The closing call to action; `href` is where its button goes.
+export function FinalCta({ href }: { href: string }) {
   return (
     <section
       aria-labelledby="cta-heading"
@@ -38,10 +39,10 @@ export function FinalCta() {
         It's free, private and runs right in your browser.
       </p>
       <a
-        href="/app"
+        href={href}
         className="group mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-50"
       >
-        Try it now
+        Upscale an image
         <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
       </a>
     </section>
