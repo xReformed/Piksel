@@ -111,6 +111,20 @@ export function pickModel(imageType: ImageType, tier: SpeedTier): ModelInfo {
   return models.find((model) => model.imageType === imageType && model.tier === tier) ?? models[0]
 }
 
+// Models trained for a different scale of the same job.
+const scaleTwins: Partial<Record<ModelId, ModelId>> = {
+  'realesrgan-x4plus': 'realesrgan-x2plus',
+  'realesrgan-x2plus': 'realesrgan-x4plus',
+}
+
+// The model to use for `scale`: the twin made for that scale if there is one (2× photos use
+// x2plus rather than shrinking a 4× result), otherwise `id` itself.
+export function modelForScale(id: ModelId, scale: number): ModelId {
+  const twin = scaleTwins[id]
+  const wanted = scale <= 2 ? 2 : 4
+  return twin && getModel(id).scale !== wanted && getModel(twin).scale === wanted ? twin : id
+}
+
 // Denoise strengths are separate files, blended from realesr-general-x4v3 and its "weak denoise"
 // twin the way Real-ESRGAN's --denoise_strength does (0 = keep noise, 100 = remove it).
 const denoiseLevels: Record<Denoise, number> = { off: 0, low: 25, medium: 50, high: 100 }

@@ -21,11 +21,11 @@ export default defineConfig({
   },
   build: {
     rolldownOptions: {
-      // Two pages: the landing page and the upscaler at /app (vercel.json's cleanUrls serves
-      // app.html there). Separate entries keep the upscaler's code off the landing page.
+      // One entry per page: the home page, and each tool at /<tool> (vercel.json's cleanUrls
+      // serves <tool>.html there). Separate entries keep each tool's code off the other pages.
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        app: fileURLToPath(new URL('./app.html', import.meta.url)),
+        upscaler: fileURLToPath(new URL('./upscaler.html', import.meta.url)),
       },
     },
   },

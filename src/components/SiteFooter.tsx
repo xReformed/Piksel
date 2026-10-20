@@ -1,3 +1,4 @@
+import { tools } from '../content/tools.ts'
 import { CoffeeIcon } from './icons.tsx'
 import { Logo } from './Logo.tsx'
 
@@ -6,20 +7,18 @@ const repoUrl = 'https://github.com/xReformed/Piksel'
 // (vercel.com/docs/limits/fair-use-guidelines); selling things there would count as commercial.
 const kofiUrl = 'https://ko-fi.com/your-name'
 
-// Links are absolute so they work from the upscaler page as well as the landing page.
-const columns = [
+type FooterLink = { label: string; href: string; soon?: boolean }
+
+// Links are absolute so they work from every page.
+const columns: { title: string; links: FooterLink[] }[] = [
   {
-    title: 'Product',
-    links: [
-      { label: 'Upscaler', href: '/app' },
-      { label: 'Features', href: '/#features' },
-      { label: 'How it works', href: '/#how-it-works' },
-      { label: 'Examples', href: '/#examples' },
-    ],
+    title: 'Tools',
+    links: tools.map(({ name, href, available }) => ({ label: name, href, soon: !available })),
   },
   {
     title: 'Help',
     links: [
+      { label: 'How it works', href: '/#how-it-works' },
       { label: 'FAQ', href: '/#faq' },
       { label: 'Report an issue', href: `${repoUrl}/issues` },
     ],
@@ -49,7 +48,7 @@ export function SiteFooter() {
             <Logo />
           </a>
           <p className="mt-4 text-sm/6 text-pretty text-slate-600">
-            Piksel is a free AI image upscaler that runs on your own GPU, so your images never leave
+            Piksel makes free AI image tools that run on your own GPU, so your images never leave
             your device.
           </p>
         </div>
@@ -62,15 +61,24 @@ export function SiteFooter() {
             <div key={column.title}>
               <h2 className="text-sm font-semibold text-slate-950">{column.title}</h2>
               <ul className="mt-4 space-y-3 text-sm">
-                {column.links.map(({ label, href }) => (
+                {column.links.map(({ label, href, soon }) => (
                   <li key={label}>
-                    <a
-                      href={href}
-                      {...externalLinkProps(href)}
-                      className="text-slate-600 transition-colors hover:text-slate-950"
-                    >
-                      {label}
-                    </a>
+                    {soon ? (
+                      <span className="flex items-center gap-2 text-slate-400">
+                        {label}
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                          Soon
+                        </span>
+                      </span>
+                    ) : (
+                      <a
+                        href={href}
+                        {...externalLinkProps(href)}
+                        className="text-slate-600 transition-colors hover:text-slate-950"
+                      >
+                        {label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

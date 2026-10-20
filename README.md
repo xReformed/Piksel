@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The landing page is at `/` and the upscaler at `/app`. The upscaler needs the AI model files (below) before it can run.
+The home page (an overview of all tools) is at `/` and the upscaler at `/upscaler`; `/app` redirects there on Vercel. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. The upscaler needs the AI model files (below) before it can run.
 
 ## AI models
 

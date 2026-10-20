@@ -1,32 +1,14 @@
 import type { ComponentType } from 'react'
-import { DownloadIcon, LockIcon, MaximizeIcon, UploadIcon } from './icons.tsx'
+import { LockIcon } from './icons.tsx'
 import { SectionHeading } from './SectionHeading.tsx'
 
-type Step = {
+export type Step = {
   Icon: ComponentType<{ className?: string }>
   title: string
   description: string
 }
 
-const steps: Step[] = [
-  {
-    Icon: UploadIcon,
-    title: 'Drop your image',
-    description: 'Drag in a PNG, JPG or WebP, or click to browse your files.',
-  },
-  {
-    Icon: MaximizeIcon,
-    title: 'Choose a size',
-    description: "Pick 2× or 4×, and tell Piksel whether it's a photo or artwork.",
-  },
-  {
-    Icon: DownloadIcon,
-    title: 'Download the result',
-    description: 'Compare the before and after, then save the sharper version.',
-  },
-]
-
-export function HowItWorks() {
+export function HowItWorks({ steps }: { steps: Step[] }) {
   return (
     <section
       id="how-it-works"
@@ -63,8 +45,8 @@ export function HowItWorks() {
         <LockIcon className="mt-0.5 size-5 shrink-0 text-blue-600" />
         <p className="text-sm/6 text-slate-600">
           <span className="font-semibold text-slate-950">What happens behind the scenes: </span>
-          the first time you upscale, Piksel downloads the AI model into your browser and saves it
-          for next time. From then on everything runs on your own GPU, and your images are never
+          the first time you use a tool, Piksel downloads its AI model into your browser and saves
+          it for next time. From then on everything runs on your own GPU, and your images are never
           sent anywhere.
         </p>
       </div>

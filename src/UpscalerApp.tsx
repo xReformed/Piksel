@@ -1,5 +1,10 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
+import { Examples } from './components/Examples.tsx'
+import { Faq } from './components/Faq.tsx'
+import { Features } from './components/Features.tsx'
+import { FinalCta } from './components/FinalCta.tsx'
+import { HowItWorks } from './components/HowItWorks.tsx'
 import { ArrowRightIcon, ChipIcon, DownloadIcon } from './components/icons.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
@@ -8,6 +13,7 @@ import { ImageStage, type Job, type RunningJob } from './components/upscaler/Ima
 import type { LivePreviewHandle } from './components/upscaler/LivePreview.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import { SettingsPanel } from './components/upscaler/SettingsPanel.tsx'
+import { upscalerFaqs, upscalerFeatures, upscalerSteps } from './content/upscaler.ts'
 import { detectDevice, type DeviceInfo } from './lib/device.ts'
 import {
   acceptAttribute,
@@ -167,139 +173,155 @@ export function UpscalerApp() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900 antialiased">
-      <SiteHeader page="app" />
+      <SiteHeader />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8">
-        <div className="pt-4 pb-6 sm:pt-8">
-          <h1 className="text-3xl font-bold tracking-[-0.03em] text-slate-950 sm:text-4xl">
-            Upscale an image
-          </h1>
-          <p className="mt-2 text-slate-500">
-            Everything runs on your device. Your image is never uploaded.
-          </p>
-        </div>
+        <section id="upscaler" aria-labelledby="upscaler-heading" className="scroll-mt-4">
+          <div className="pt-4 pb-6 sm:pt-8">
+            <h1
+              id="upscaler-heading"
+              className="text-3xl font-bold tracking-[-0.03em] text-slate-950 sm:text-4xl"
+            >
+              AI image upscaler
+            </h1>
+            <p className="mt-2 text-pretty text-slate-500">
+              Upscale photos and art up to 4× with AI, right in your browser. Your image is never
+              uploaded.
+            </p>
+          </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
-          <section aria-label="Image" className="min-w-0 space-y-4">
-            {error && <Notice tone="error">{error}</Notice>}
-            {image ? (
-              <ImageStage
-                image={image}
-                job={job}
-                previewRef={previewRef}
-                onCancel={() => abortRef.current?.abort()}
-                onReplace={() => replaceInputRef.current?.click()}
-                onRemove={removeImage}
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
+            <section aria-label="Image" className="min-w-0 space-y-4">
+              {error && <Notice tone="error">{error}</Notice>}
+              {image ? (
+                <ImageStage
+                  image={image}
+                  job={job}
+                  previewRef={previewRef}
+                  onCancel={() => abortRef.current?.abort()}
+                  onReplace={() => replaceInputRef.current?.click()}
+                  onRemove={removeImage}
+                />
+              ) : (
+                <DropZone onFile={openFile} />
+              )}
+              <input
+                ref={replaceInputRef}
+                type="file"
+                accept={acceptAttribute}
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) void openFile(file)
+                  event.target.value = ''
+                }}
               />
-            ) : (
-              <DropZone onFile={openFile} />
-            )}
-            <input
-              ref={replaceInputRef}
-              type="file"
-              accept={acceptAttribute}
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                if (file) void openFile(file)
-                event.target.value = ''
-              }}
-            />
-          </section>
+            </section>
 
-          <aside
-            aria-label="Settings"
-            className="flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10 lg:max-h-[calc(100vh-3rem)]"
-          >
-            {/* On large screens the panel is capped at the viewport height: long settings scroll
+            <aside
+              aria-label="Settings"
+              className="flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10 lg:max-h-[calc(100vh-3rem)]"
+            >
+              {/* On large screens the panel is capped at the viewport height: long settings scroll
                 inside it, so the buttons below stay within one screen. */}
-            <div className="space-y-6 p-5 sm:p-6 lg:overflow-y-auto">
-              <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
-                <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                  Result size
-                </p>
-                {image ? (
-                  <p className="mt-1 font-semibold text-slate-950 tabular-nums">
-                    {image.width} × {image.height}
-                    <span className="mx-1.5 text-slate-400">→</span>
-                    {plan.outputWidth} × {plan.outputHeight}
+              <div className="space-y-6 p-5 sm:p-6 lg:overflow-y-auto">
+                <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
+                  <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                    Result size
                   </p>
-                ) : (
-                  <p className="mt-1 text-sm text-slate-500">
-                    Add an image to see the result size.
+                  {image ? (
+                    <p className="mt-1 font-semibold text-slate-950 tabular-nums">
+                      {image.width} × {image.height}
+                      <span className="mx-1.5 text-slate-400">→</span>
+                      {plan.outputWidth} × {plan.outputHeight}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-sm text-slate-500">
+                      Add an image to see the result size.
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-slate-500">
+                    {formatScale(plan.outputScale)}× with {plan.model.name}
                   </p>
-                )}
-                <p className="mt-1 text-xs text-slate-500">
-                  {formatScale(plan.outputScale)}× with {plan.model.name}
-                </p>
+                </div>
+
+                <SettingsPanel
+                  settings={settings}
+                  onChange={updateSettings}
+                  plan={plan}
+                  device={device ?? undetectedDevice}
+                  hasAlpha={image?.hasAlpha ?? false}
+                  disabled={running}
+                />
               </div>
 
-              <SettingsPanel
-                settings={settings}
-                onChange={updateSettings}
-                plan={plan}
-                device={device ?? undetectedDevice}
-                hasAlpha={image?.hasAlpha ?? false}
-                disabled={running}
-              />
-            </div>
+              <div className="space-y-3 border-t border-slate-200 p-5 sm:p-6">
+                {plan.tooLarge && (
+                  <Notice tone="warning">
+                    The result would be {plan.outputWidth} × {plan.outputHeight}, more than your
+                    browser can safely handle.{' '}
+                    {settings.customScale === null && settings.scale === 4
+                      ? 'Try 2× instead.'
+                      : 'Try a smaller image.'}
+                  </Notice>
+                )}
 
-            <div className="space-y-3 border-t border-slate-200 p-5 sm:p-6">
-              {plan.tooLarge && (
-                <Notice tone="warning">
-                  The result would be {plan.outputWidth} × {plan.outputHeight}, more than your
-                  browser can safely handle.{' '}
-                  {settings.customScale === null && settings.scale === 4
-                    ? 'Try 2× instead.'
-                    : 'Try a smaller image.'}
-                </Notice>
-              )}
-
-              {job.status === 'done' ? (
-                <>
-                  <a
-                    href={job.url}
-                    download={job.fileName}
-                    className={`${primaryButton} h-12 w-full`}
-                  >
-                    <DownloadIcon className="size-4" />
-                    Download {formatLabels[job.format]} · {formatBytes(job.size)}
-                  </a>
+                {job.status === 'done' ? (
+                  <>
+                    <a
+                      href={job.url}
+                      download={job.fileName}
+                      className={`${primaryButton} h-12 w-full`}
+                    >
+                      <DownloadIcon className="size-4" />
+                      Download {formatLabels[job.format]} · {formatBytes(job.size)}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={startUpscale}
+                      className={`${secondaryButton} h-11 w-full`}
+                    >
+                      Upscale again
+                    </button>
+                  </>
+                ) : (
                   <button
                     type="button"
                     onClick={startUpscale}
-                    className={`${secondaryButton} h-11 w-full`}
+                    disabled={!image || !device || plan.tooLarge || running}
+                    className={`${primaryButton} group h-12 w-full`}
                   >
-                    Upscale again
+                    {running ? 'Upscaling…' : 'Upscale image'}
+                    {!running && (
+                      <ArrowRightIcon className="size-4 transition-transform group-enabled:group-hover:translate-x-0.5" />
+                    )}
                   </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={startUpscale}
-                  disabled={!image || !device || plan.tooLarge || running}
-                  className={`${primaryButton} group h-12 w-full`}
-                >
-                  {running ? 'Upscaling…' : 'Upscale image'}
-                  {!running && (
-                    <ArrowRightIcon className="size-4 transition-transform group-enabled:group-hover:translate-x-0.5" />
-                  )}
-                </button>
-              )}
+                )}
 
-              <p className="flex items-center justify-center gap-2 text-center text-sm text-slate-500">
-                <ChipIcon className="size-4 shrink-0" />
-                {!device
-                  ? 'Checking your hardware…'
-                  : plan.backend === 'gpu'
-                    ? `Runs on your GPU${device.gpuName ? ` (${device.gpuName})` : ''}`
-                    : device.webgpu
-                      ? 'Runs on your CPU'
-                      : 'No WebGPU here, so it runs on your CPU'}
-              </p>
-            </div>
-          </aside>
-        </div>
+                <p className="flex items-center justify-center gap-2 text-center text-sm text-slate-500">
+                  <ChipIcon className="size-4 shrink-0" />
+                  {!device
+                    ? 'Checking your hardware…'
+                    : plan.backend === 'gpu'
+                      ? `Runs on your GPU${device.gpuName ? ` (${device.gpuName})` : ''}`
+                      : device.webgpu
+                        ? 'Runs on your CPU'
+                        : 'No WebGPU here, so it runs on your CPU'}
+                </p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <Features
+          title="Upscaling without the catch"
+          description="No uploads, no credits, no watermarks. Just sharper images, made on your own hardware."
+          features={upscalerFeatures}
+        />
+        <Examples />
+        <HowItWorks steps={upscalerSteps} />
+        <Faq description="Quick answers about the upscaler." items={upscalerFaqs} />
+        <FinalCta href="#upscaler" />
       </main>
 
       <SiteFooter />

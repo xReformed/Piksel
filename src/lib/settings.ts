@@ -2,6 +2,7 @@ import type { DeviceInfo } from './device.ts'
 import {
   getModel,
   maxTileSize,
+  modelForScale,
   modelUrl,
   pickModel,
   type Denoise,
@@ -111,8 +112,13 @@ export type Plan = {
 export function resolvePlan(settings: Settings, device: DeviceInfo, image: ImageMeta | null): Plan {
   const backend = settings.backend === 'cpu' || !device.webgpu ? 'cpu' : 'gpu'
   const tier = settings.speed === 'auto' ? (backend === 'gpu' ? 'best' : 'fast') : settings.speed
-  const model =
-    settings.model === 'auto' ? pickModel(settings.imageType, tier) : getModel(settings.model)
+  const requestedScale = settings.customScale ?? settings.scale
+  // Auto prefers a model made for the requested size, so 2× photos use x2plus.
+  const model = getModel(
+    settings.model === 'auto'
+      ? modelForScale(pickModel(settings.imageType, tier).id, requestedScale)
+      : settings.model,
+  )
   const precision =
     backend === 'gpu' && device.shaderF16 && settings.precision !== 'fp32' ? 'fp16' : 'fp32'
 
@@ -126,7 +132,7 @@ export function resolvePlan(settings: Settings, device: DeviceInfo, image: Image
       ? 128
       : autoTileCap
 
-  const outputScale = Math.min(settings.customScale ?? settings.scale, model.scale)
+  const outputScale = Math.min(requestedScale, model.scale)
   const outputWidth = image ? Math.round(image.width * outputScale) : 0
   const outputHeight = image ? Math.round(image.height * outputScale) : 0
 

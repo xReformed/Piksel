@@ -139,6 +139,16 @@ export function PlusIcon({ className }: IconProps) {
   )
 }
 
+export function ScissorsIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} {...strokeProps}>
+      <circle cx="6" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <path d="M8.12 8.12 12 12M20 4 8.12 15.88M14.8 14.8 20 20" />
+    </svg>
+  )
+}
+
 export function UploadIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} {...strokeProps}>
