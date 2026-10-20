@@ -103,7 +103,11 @@ async function getSession(id: number, job: EngineJob, fresh = false) {
 async function downloadModel(id: number, url: string): Promise<Uint8Array<ArrayBuffer>> {
   const cache = 'caches' in self ? await caches.open(modelCacheName).catch(() => null) : null
   const cached = await cache?.match(url)
-  if (cached) return new Uint8Array(await cached.arrayBuffer())
+  if (cached) {
+    const bytes = new Uint8Array(await cached.arrayBuffer())
+    // Skip a page cached in place of the model before this check existed; it's replaced below.
+    if (!isHtml(bytes)) return bytes
+  }
 
   let response: Response
   try {
@@ -144,8 +148,17 @@ async function downloadModel(id: number, url: string): Promise<Uint8Array<ArrayB
     bytes.set(chunk, offset)
     offset += chunk.length
   }
+  if (isHtml(bytes)) {
+    throw new EngineError(`The AI model couldn't be downloaded: the server has no file at ${url}.`)
+  }
   await cache?.put(url, new Response(bytes)).catch(() => undefined)
   return bytes
+}
+
+// Servers with a single-page-app fallback, Vite's dev server among them, answer a request for a
+// missing file with the site's HTML page and status 200. An ONNX file never starts with "<".
+function isHtml(bytes: Uint8Array) {
+  return new TextDecoder().decode(bytes.subarray(0, 64)).trimStart().startsWith('<')
 }
 
 // --- Upscaling -----------------------------------------------------------------------------------
