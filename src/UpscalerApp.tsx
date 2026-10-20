@@ -1,10 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
-import { Examples } from './components/Examples.tsx'
-import { Faq } from './components/Faq.tsx'
-import { Features } from './components/Features.tsx'
-import { FinalCta } from './components/FinalCta.tsx'
-import { HowItWorks } from './components/HowItWorks.tsx'
 import { ArrowRightIcon, ChipIcon, DownloadIcon } from './components/icons.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
@@ -13,7 +8,6 @@ import { ImageStage, type Job, type RunningJob } from './components/upscaler/Ima
 import type { LivePreviewHandle } from './components/upscaler/LivePreview.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import { SettingsPanel } from './components/upscaler/SettingsPanel.tsx'
-import { upscalerFaqs, upscalerFeatures, upscalerSteps } from './content/upscaler.ts'
 import { detectDevice, type DeviceInfo } from './lib/device.ts'
 import {
   acceptAttribute,
@@ -176,7 +170,7 @@ export function UpscalerApp() {
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8">
-        <section id="upscaler" aria-labelledby="upscaler-heading" className="scroll-mt-4">
+        <section aria-labelledby="upscaler-heading">
           <div className="pt-4 pb-6 sm:pt-8">
             <h1
               id="upscaler-heading"
@@ -312,16 +306,6 @@ export function UpscalerApp() {
             </aside>
           </div>
         </section>
-
-        <Features
-          title="Upscaling without the catch"
-          description="No uploads, no credits, no watermarks. Just sharper images, made on your own hardware."
-          features={upscalerFeatures}
-        />
-        <Examples />
-        <HowItWorks steps={upscalerSteps} />
-        <Faq description="Quick answers about the upscaler." items={upscalerFaqs} />
-        <FinalCta href="#upscaler" />
       </main>
 
       <SiteFooter />

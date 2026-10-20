@@ -64,8 +64,8 @@ export function SiteFooter() {
                 {column.links.map(({ label, href, soon }) => (
                   <li key={label}>
                     {soon ? (
-                      <span className="flex items-center gap-2 text-slate-400">
-                        {label}
+                      <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-400">
+                        <span className="whitespace-nowrap">{label}</span>
                         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
                           Soon
                         </span>
