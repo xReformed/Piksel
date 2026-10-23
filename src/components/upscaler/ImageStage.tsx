@@ -1,10 +1,11 @@
 import type { Ref } from 'react'
-import { formatBytes, formatLabels, type LoadedImage } from '../../lib/image.ts'
+import { formatBytes, formatLabels, formatMB, type LoadedImage } from '../../lib/image.ts'
 import type { OutputFormat } from '../../lib/settings.ts'
 import type { EngineStage } from '../../lib/upscaler.ts'
 import { primaryButton, secondaryButton } from '../buttonStyles.ts'
 import { CompareSlider } from '../CompareSlider.tsx'
 import { DownloadIcon } from '../icons.tsx'
+import { ProgressFooter } from '../ProgressFooter.tsx'
 import { LivePreview, type LivePreviewHandle } from './LivePreview.tsx'
 
 export type RunningJob = {
@@ -137,8 +138,6 @@ function formatTimeLeft(seconds: number): string {
   return `About ${Math.round(seconds / 60)} min left`
 }
 
-const toMB = (bytes: number) => (bytes / 1e6).toFixed(bytes < 10e6 ? 1 : 0)
-
 // What the bar says at each stage, and how full it is (null shows a pulsing, indeterminate bar).
 function describe(job: RunningJob): { title: string; detail: string; percent: number | null } {
   const { stage } = job
@@ -147,7 +146,7 @@ function describe(job: RunningJob): { title: string; detail: string; percent: nu
       const percent = stage.total ? Math.round((stage.loaded / stage.total) * 100) : null
       return {
         title: `Downloading the AI model…${percent === null ? '' : ` ${percent}%`}`,
-        detail: `${toMB(stage.loaded)}${stage.total ? ` of ${toMB(stage.total)}` : ''} MB · Only needed once, it's saved for next time`,
+        detail: `${formatMB(stage.loaded)}${stage.total ? ` of ${formatMB(stage.total)}` : ''} MB · Only needed once, it's saved for next time`,
         percent,
       }
     }
@@ -172,40 +171,17 @@ function describe(job: RunningJob): { title: string; detail: string; percent: nu
 function ProgressBar({ job, onCancel }: { job: RunningJob; onCancel: () => void }) {
   const { title, detail, percent } = describe(job)
   return (
-    <div className="relative px-4 py-3">
-      <div
-        role="progressbar"
-        aria-label="Upscaling progress"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={percent ?? undefined}
-        aria-valuetext={title}
-        className="absolute inset-x-0 top-0 h-1 overflow-hidden bg-slate-200"
-      >
-        {percent === null ? (
-          <div className="h-full w-full animate-pulse bg-blue-600/50" />
-        ) : (
-          <div className="h-full bg-blue-600" style={{ width: `${percent}%` }} />
-        )}
-      </div>
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 text-sm">
-          <p className="font-medium text-slate-950">{title}</p>
-          <p className="text-slate-500 tabular-nums">{detail}</p>
-          {job.retriedTileSize !== null && (
-            <p className="mt-1 text-amber-700">
-              Your GPU ran out of memory, so Piksel restarted with {job.retriedTileSize} px tiles.
-            </p>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={onCancel}
-          className={`${secondaryButton} h-9 shrink-0 px-3 text-sm`}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
+    <ProgressFooter
+      label="Upscaling progress"
+      title={title}
+      detail={detail}
+      percent={percent}
+      notice={
+        job.retriedTileSize !== null
+          ? `Your GPU ran out of memory, so Piksel restarted with ${job.retriedTileSize} px tiles.`
+          : null
+      }
+      onCancel={onCancel}
+    />
   )
 }

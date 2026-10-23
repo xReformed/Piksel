@@ -1,41 +1,7 @@
 // Content for the home page (/), which covers every tool.
 import type { FaqItem } from '../components/Faq.tsx'
-import type { Feature } from '../components/Features.tsx'
 import type { Step } from '../components/HowItWorks.tsx'
-import {
-  ChipIcon,
-  DownloadIcon,
-  InfinityIcon,
-  LaptopIcon,
-  LayersIcon,
-  LockIcon,
-  UploadIcon,
-} from '../components/icons.tsx'
-
-export const homeFeatures: Feature[] = [
-  {
-    Icon: LockIcon,
-    title: 'Private by design',
-    description:
-      'Your images never leave your device. Every tool runs in your browser, so nothing is uploaded.',
-  },
-  {
-    Icon: ChipIcon,
-    title: 'Powered by your GPU',
-    description: 'WebGPU runs the AI on your own graphics card for fast, high-quality results.',
-  },
-  {
-    Icon: InfinityIcon,
-    title: 'Free, with no limits',
-    description: 'No accounts, no credits, no watermarks and no daily caps.',
-  },
-  {
-    Icon: LaptopIcon,
-    title: 'Works on your hardware',
-    description:
-      "Adapts to your GPU, from the latest cards down to a GTX 1050 Ti, with a CPU fallback when WebGPU isn't available.",
-  },
-]
+import { DownloadIcon, LayersIcon, UploadIcon } from '../components/icons.tsx'
 
 export const homeSteps: Step[] = [
   {

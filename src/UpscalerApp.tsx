@@ -9,6 +9,7 @@ import type { LivePreviewHandle } from './components/upscaler/LivePreview.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import { SettingsPanel } from './components/upscaler/SettingsPanel.tsx'
 import { detectDevice, type DeviceInfo } from './lib/device.ts'
+import { handoffParam, takeHandedOffImage } from './lib/handoff.ts'
 import {
   acceptAttribute,
   formatBytes,
@@ -163,6 +164,17 @@ export function UpscalerApp() {
     const listener = (event: ClipboardEvent) => onPaste(event)
     window.addEventListener('paste', listener)
     return () => window.removeEventListener('paste', listener)
+  }, [])
+
+  // Another tool (e.g. "Upscale this" in the background remover) can send an image here.
+  const onHandoff = useEffectEvent((file: File) => void openFile(file))
+
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has(handoffParam)) return
+    window.history.replaceState(null, '', window.location.pathname)
+    void takeHandedOffImage().then((file) => {
+      if (file) onHandoff(file)
+    })
   }, [])
 
   return (

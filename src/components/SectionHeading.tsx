@@ -6,14 +6,14 @@ type SectionHeadingProps = {
 
 export function SectionHeading({ id, title, description }: SectionHeadingProps) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <div className="mx-auto max-w-3xl text-center">
       <h2
         id={id}
-        className="text-3xl font-bold tracking-[-0.03em] text-balance text-slate-950 sm:text-4xl"
+        className="text-3xl leading-tight font-semibold tracking-[-0.03em] text-balance text-ink sm:text-5xl"
       >
         {title}
       </h2>
-      <p className="mt-4 text-lg text-pretty text-slate-500">{description}</p>
+      <p className="mx-auto mt-5 max-w-2xl text-lg text-pretty text-slate-600">{description}</p>
     </div>
   )
 }

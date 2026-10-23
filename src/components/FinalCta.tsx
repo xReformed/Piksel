@@ -24,23 +24,24 @@ export function FinalCta({ href }: { href: string }) {
   return (
     <section
       aria-labelledby="cta-heading"
-      className="relative isolate mt-24 overflow-hidden rounded-3xl bg-blue-600 px-6 py-16 text-center sm:mt-32 sm:py-20"
+      className="relative isolate mt-24 overflow-hidden rounded-3xl bg-ink px-6 py-16 text-center sm:mt-32 sm:py-20"
     >
+      <div aria-hidden="true" className="bg-grid-dark absolute inset-0 -z-10" />
       <PixelCluster className="-top-4 -left-4" />
       <PixelCluster className="-right-4 -bottom-4 rotate-180" />
 
       <h2
         id="cta-heading"
-        className="text-3xl font-bold tracking-[-0.03em] text-balance text-white sm:text-4xl"
+        className="text-3xl font-semibold tracking-[-0.03em] text-balance text-white sm:text-5xl"
       >
         Ready to sharpen your images?
       </h2>
-      <p className="mx-auto mt-4 max-w-xl text-lg text-pretty text-blue-100">
+      <p className="mx-auto mt-5 max-w-xl text-lg text-pretty text-slate-300">
         It's free, private and runs right in your browser.
       </p>
       <a
         href={href}
-        className="group mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-50"
+        className="group mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-ink shadow-sm transition-colors hover:bg-sky-50"
       >
         Upscale an image
         <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />

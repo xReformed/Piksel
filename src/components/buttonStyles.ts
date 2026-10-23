@@ -4,6 +4,8 @@ const base =
 
 export const primaryButton = `${base} bg-blue-600 text-white shadow-sm hover:bg-blue-700 disabled:hover:bg-blue-600`
 
+export const inkButton = `${base} bg-ink text-white shadow-sm hover:bg-ink/85`
+
 export const secondaryButton = `${base} border border-slate-200 bg-white text-slate-900 shadow-xs hover:border-slate-300 hover:bg-slate-50 disabled:hover:bg-white`
 
 // Frame for before/after sliders shown on their own.
