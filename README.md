@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The home page (an overview of all tools) is at `/` and the upscaler at `/upscaler`; `/app` redirects there on Vercel. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. The upscaler needs the AI model files (below) before it can run.
+The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. The upscaler needs the AI model files (below) before it can run. The background remover's interface is built, but it uses a placeholder until its models are connected (see the roadmap).
 
 ## AI models
 
@@ -79,7 +79,11 @@ Ideas for what to build next. Every tool should keep Piksel's promise: it runs o
 
 Each tool gets its own page and an entry in `src/content/tools.ts`, and can reuse the model download and caching, the drop zone, and the before/after slider. Check each model's license before shipping it.
 
-- [ ] **Background remover**: already listed as "Coming soon". [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) is MIT-licensed; avoid Bria's RMBG models, which are non-commercial.
+- [ ] **Background remover**: the page at `/remove-background` is built with a placeholder in `src/lib/backgroundRemover.ts`. Still to do:
+  - [ ] Connect the models in a Web Worker, like the upscaler: Fast = U²-Net small ([`u2netp.onnx`](https://github.com/danielgatis/rembg/releases), 4.6 MB, Apache-2.0), High quality = [BiRefNet lite](https://huggingface.co/onnx-community/BiRefNet_lite-ONNX) (115 MB fp16, MIT). Avoid Bria's RMBG models, which are non-commercial.
+  - [ ] Set `available: true` in `src/content/tools.ts` and link the home page card to the page.
+  - [ ] An erase/restore brush to fix mistakes in the cut-out.
+  - [ ] Batch processing.
 - [ ] **Object eraser**: brush over something and AI fills it in. [LaMa](https://github.com/advimman/lama) is Apache-2.0 and is known to run in browsers.
 - [ ] **Face restoration** for old or blurry photos, pairing well with upscaling. [GFPGAN](https://github.com/TencentARC/GFPGAN) is the usual choice (check the license details); avoid CodeFormer, which is non-commercial.
 - [ ] **Colorize black-and-white photos**, e.g. with [DeOldify](https://github.com/jantic/DeOldify) (MIT).

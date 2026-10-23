@@ -30,3 +30,8 @@ export const tools: Tool[] = [
     available: false,
   },
 ]
+
+export const toolsById = Object.fromEntries(tools.map((tool) => [tool.id, tool])) as Record<
+  string,
+  Tool
+>

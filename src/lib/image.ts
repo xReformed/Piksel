@@ -80,6 +80,11 @@ export function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
+// A byte count in MB without the unit, for "42 of 115 MB" style progress.
+export function formatMB(bytes: number): string {
+  return (bytes / 1e6).toFixed(bytes < 10e6 ? 1 : 0)
+}
+
 export function formatScale(scale: number): string {
   return Number.isInteger(scale) ? String(scale) : scale.toFixed(1)
 }
