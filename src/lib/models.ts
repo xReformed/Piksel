@@ -135,7 +135,12 @@ const modelBaseUrl: string = import.meta.env.VITE_MODEL_BASE_URL || '/models/'
 
 export function modelUrl(model: ModelInfo, precision: Precision, denoise: Denoise): string {
   const name = model.supportsDenoise ? `${model.id}-dn${denoiseLevels[denoise]}` : model.id
-  return new URL(`${name}.${precision}.onnx`, new URL(modelBaseUrl, location.href)).href
+  return modelFileUrl(`${name}.${precision}.onnx`)
+}
+
+// The full URL of a file in the model folder, such as "birefnet-lite.fp16.onnx".
+export function modelFileUrl(fileName: string): string {
+  return new URL(fileName, new URL(modelBaseUrl, location.href)).href
 }
 
 // Largest tile (a multiple of 32) whose biggest intermediate tensor, 64 channels at the model's

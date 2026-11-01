@@ -27,7 +27,7 @@ export const tools: Tool[] = [
     description: 'Cut out the subject of a photo, leaving a clean, transparent background.',
     href: '/remove-background',
     Icon: ScissorsIcon,
-    available: false,
+    available: true,
   },
 ]
 

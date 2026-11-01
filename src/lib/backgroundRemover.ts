@@ -1,10 +1,18 @@
+import type { RemoverJob, RemoverRequest, RemoverResponse } from '../worker/removerProtocol.ts'
+import { detectDevice, type DeviceInfo } from './device.ts'
+import { modelFileUrl } from './models.ts'
+
 export type RemoverQuality = 'fast' | 'quality'
 
-// The models planned for each setting (both permissively licensed and published as ONNX):
-// U²-Net small (Apache-2.0) and BiRefNet lite in fp16 (MIT).
-export const removerModels: Record<RemoverQuality, { label: string; downloadMB: number }> = {
-  fast: { label: 'Fast', downloadMB: 4.6 },
-  quality: { label: 'High quality', downloadMB: 115 },
+// BiRefNet (MIT) in fp16, converted by scripts/convert_birefnet.py: the lite model (Swin-T
+// backbone) for Fast and the standard one (Swin-L) for High quality. Files are `<file>.fp16.onnx`
+// in the model folder, plus `birefnet-lite.fp32.onnx` for devices without fp16 on the GPU.
+export const removerModels: Record<
+  RemoverQuality,
+  { label: string; file: string; downloadMB: number }
+> = {
+  fast: { label: 'Fast', file: 'birefnet-lite', downloadMB: 97 },
+  quality: { label: 'High quality', file: 'birefnet', downloadMB: 472 },
 }
 
 export type RemoverStage =
@@ -15,109 +23,120 @@ type RemoveOptions = {
   onStage: (stage: RemoverStage) => void
 }
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+let device: Promise<DeviceInfo> | null = null
 
-// Placeholder only: models "downloaded" this session, so the simulated download runs once each.
-const downloaded = new Set<RemoverQuality>()
+export function getDevice(): Promise<DeviceInfo> {
+  device ??= detectDevice()
+  return device
+}
 
-// PLACEHOLDER ENGINE: no AI model is connected yet. It simulates the first-run download (with the
-// real model sizes) so the progress UI can be seen, then cuts out the subject with a simple flood
-// fill from the image's edges, which only works on plain backgrounds. The real engine replaces
-// this function and returns the same thing: a full-size mask whose alpha is the subject.
+// The fp16 files need WebGPU with shader-f16. Without it, only the lite model has an fp32 file.
+export function supportsHighQuality(info: DeviceInfo): boolean {
+  return info.webgpu && info.shaderF16
+}
+
+function planJob(quality: RemoverQuality, info: DeviceInfo): RemoverJob {
+  if (supportsHighQuality(info)) {
+    return { modelUrl: modelFileUrl(`${removerModels[quality].file}.fp16.onnx`), backend: 'gpu' }
+  }
+  return { modelUrl: modelFileUrl('birefnet-lite.fp32.onnx'), backend: info.webgpu ? 'gpu' : 'cpu' }
+}
+
+class GpuFailedError extends Error {}
+
+// One worker, kept between jobs so the model stays loaded.
+let worker: Worker | null = null
+let nextJobId = 1
+
+function getWorker(): Worker {
+  worker ??= new Worker(new URL('../worker/remover.worker.ts', import.meta.url), { type: 'module' })
+  return worker
+}
+
+// Finds the subject of `image` and returns a full-size mask whose alpha is the subject. If the GPU
+// can't run Fast (most likely out of memory), it runs again on the CPU. Rejects with an AbortError
+// when `signal` aborts.
 export async function removeBackground(
   image: ImageBitmap,
   quality: RemoverQuality,
   { signal, onStage }: RemoveOptions,
 ): Promise<ImageBitmap> {
-  if (!downloaded.has(quality)) {
-    const total = removerModels[quality].downloadMB * 1e6
-    for (let step = 0; step <= 30; step++) {
-      signal.throwIfAborted()
-      onStage({ name: 'downloading', loaded: (total * step) / 30, total })
-      await wait(40)
+  const job = planJob(quality, await getDevice())
+  try {
+    return await runJob(image, job, signal, onStage)
+  } catch (error) {
+    if (!(error instanceof GpuFailedError)) throw error
+    if (quality === 'quality') {
+      throw new Error(`${error.message} High quality needs more GPU memory; try Fast instead.`, {
+        cause: error,
+      })
     }
-    downloaded.add(quality)
+    const cpuJob: RemoverJob = { modelUrl: modelFileUrl('birefnet-lite.fp32.onnx'), backend: 'cpu' }
+    return runJob(image, cpuJob, signal, onStage)
   }
-  onStage({ name: 'processing' })
-  await wait(700)
-  signal.throwIfAborted()
-  return edgeFillMask(image)
 }
 
-// Pixels are background when connected to the image's border by similar colours (within this
-// distance in RGB) of the border pixel they were reached from.
-const colorTolerance = 56
-// The mask is worked out on a smaller copy, then scaled up with soft edges.
-const maskSide = 640
+async function runJob(
+  image: ImageBitmap,
+  job: RemoverJob,
+  signal: AbortSignal,
+  onStage: (stage: RemoverStage) => void,
+): Promise<ImageBitmap> {
+  signal.throwIfAborted()
+  const instance = getWorker()
+  const id = nextJobId++
+  // The worker gets its own copy of the pixels; the page keeps the original for its previews.
+  const copy = await createImageBitmap(image)
 
-async function edgeFillMask(image: ImageBitmap): Promise<ImageBitmap> {
-  const scale = Math.min(1, maskSide / Math.max(image.width, image.height))
-  const width = Math.max(1, Math.round(image.width * scale))
-  const height = Math.max(1, Math.round(image.height * scale))
-  const small = new OffscreenCanvas(width, height)
-  const smallContext = small.getContext('2d', { willReadFrequently: true })
-  if (!smallContext) throw new Error("Your browser couldn't create a canvas.")
-  smallContext.drawImage(image, 0, 0, width, height)
-  const pixels = smallContext.getImageData(0, 0, width, height).data
-
-  const background = new Uint8Array(width * height)
-  const seedOf = new Int32Array(width * height)
-  const queue = new Int32Array(width * height)
-  let head = 0
-  let tail = 0
-  const add = (index: number, seed: number) => {
-    if (background[index]) return
-    background[index] = 1
-    seedOf[index] = seed
-    queue[tail++] = index
-  }
-  const similar = (index: number, seed: number) => {
-    const dr = pixels[index * 4] - pixels[seed * 4]
-    const dg = pixels[index * 4 + 1] - pixels[seed * 4 + 1]
-    const db = pixels[index * 4 + 2] - pixels[seed * 4 + 2]
-    return dr * dr + dg * dg + db * db < colorTolerance * colorTolerance
-  }
-
-  for (let x = 0; x < width; x++) {
-    add(x, x)
-    add((height - 1) * width + x, (height - 1) * width + x)
-  }
-  for (let y = 0; y < height; y++) {
-    add(y * width, y * width)
-    add(y * width + width - 1, y * width + width - 1)
-  }
-  while (head < tail) {
-    const index = queue[head++]
-    const seed = seedOf[index]
-    const x = index % width
-    if (x > 0 && !background[index - 1] && similar(index - 1, seed)) add(index - 1, seed)
-    if (x < width - 1 && !background[index + 1] && similar(index + 1, seed)) add(index + 1, seed)
-    if (index >= width && !background[index - width] && similar(index - width, seed)) {
-      add(index - width, seed)
+  return new Promise((resolve, reject) => {
+    function finish() {
+      instance.removeEventListener('message', onMessage)
+      instance.removeEventListener('error', onError)
+      signal.removeEventListener('abort', onAbort)
     }
-    if (
-      index < width * (height - 1) &&
-      !background[index + width] &&
-      similar(index + width, seed)
-    ) {
-      add(index + width, seed)
+
+    function onAbort() {
+      instance.postMessage({ type: 'cancel', id } satisfies RemoverRequest)
+      finish()
+      reject(signal.reason)
     }
-  }
 
-  const mask = new ImageData(width, height)
-  for (let i = 0; i < background.length; i++) {
-    mask.data[i * 4] = mask.data[i * 4 + 1] = mask.data[i * 4 + 2] = 255
-    mask.data[i * 4 + 3] = background[i] ? 0 : 255
-  }
-  smallContext.putImageData(mask, 0, 0)
+    function onError(event: ErrorEvent) {
+      finish()
+      // The worker itself failed (for example, it couldn't start), so start a fresh one next time.
+      instance.terminate()
+      if (worker === instance) worker = null
+      reject(new Error(event.message || 'The background remover stopped unexpectedly.'))
+    }
 
-  const full = new OffscreenCanvas(image.width, image.height)
-  const fullContext = full.getContext('2d')
-  if (!fullContext) throw new Error("Your browser couldn't create a canvas.")
-  fullContext.imageSmoothingQuality = 'high'
-  fullContext.filter = `blur(${Math.max(0.5, 0.6 / scale)}px)`
-  fullContext.drawImage(small, 0, 0, image.width, image.height)
-  return createImageBitmap(full)
+    function onMessage({ data: message }: MessageEvent<RemoverResponse>) {
+      if (message.id !== id) return
+      switch (message.type) {
+        case 'stage':
+          onStage(message.stage)
+          break
+        case 'done':
+          finish()
+          resolve(message.mask)
+          break
+        case 'error':
+          finish()
+          reject(
+            message.gpuFailed ? new GpuFailedError(message.message) : new Error(message.message),
+          )
+          break
+        case 'cancelled':
+          finish()
+          reject(new DOMException('Removing the background was cancelled.', 'AbortError'))
+          break
+      }
+    }
+
+    instance.addEventListener('message', onMessage)
+    instance.addEventListener('error', onError)
+    signal.addEventListener('abort', onAbort, { once: true })
+    instance.postMessage({ type: 'remove', id, job, image: copy } satisfies RemoverRequest, [copy])
+  })
 }
 
 // What goes behind the cut-out subject.

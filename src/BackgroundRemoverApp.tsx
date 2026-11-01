@@ -10,8 +10,10 @@ import { Segmented } from './components/upscaler/controls.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import {
   compose,
+  getDevice,
   removeBackground,
   removerModels,
+  supportsHighQuality,
   type Backdrop,
   type RemoverQuality,
 } from './lib/backgroundRemover.ts'
@@ -30,6 +32,7 @@ const backdropLabels: Record<BackdropKind, string> = {
 
 export function BackgroundRemoverApp() {
   const [quality, setQuality] = useState<RemoverQuality>('fast')
+  const [highQualityAvailable, setHighQualityAvailable] = useState(true)
   const [image, setImage] = useState<LoadedImage | null>(null)
   const [job, setJob] = useState<RemoverJob>({ status: 'idle' })
   const [error, setError] = useState<string | null>(null)
@@ -127,6 +130,10 @@ export function BackgroundRemoverApp() {
     }
   }
 
+  useEffect(() => {
+    void getDevice().then((info) => setHighQualityAvailable(supportsHighQuality(info)))
+  }, [])
+
   // Redraw the slider's "After" image whenever the result or the background changes.
   useEffect(() => {
     if (!image || job.status !== 'done') return
@@ -220,21 +227,15 @@ export function BackgroundRemoverApp() {
             </p>
           </div>
 
-          <div className="mb-6">
-            <Notice tone="warning">
-              <span className="font-semibold">Preview: </span>
-              the AI models aren't connected yet. For now a simple color-based cut-out stands in,
-              which works best on plain backgrounds, and the model download is simulated.
-            </Notice>
-          </div>
-
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
             <div className="min-w-0 space-y-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm">
                   <p className="font-medium text-slate-700">Quality</p>
                   <p className="text-slate-500">
-                    Fast suits most photos. High quality handles hair and fine edges better.
+                    {highQualityAvailable
+                      ? 'Fast suits most photos. High quality handles hair and fine edges better.'
+                      : "High quality needs a GPU with WebGPU and fp16 support, which this browser doesn't offer."}
                   </p>
                 </div>
                 <div className="sm:w-80 sm:shrink-0">
@@ -246,6 +247,7 @@ export function BackgroundRemoverApp() {
                       {
                         value: 'quality',
                         label: `${removerModels.quality.label} · ${removerModels.quality.downloadMB} MB`,
+                        disabled: !highQualityAvailable,
                       },
                     ]}
                     onChange={changeQuality}

@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. The upscaler needs the AI model files (below) before it can run. The background remover's interface is built, but it uses a placeholder until its models are connected (see the roadmap).
+The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. Both tools need their AI model files (below) before they can run.
 
 ## AI models
 
@@ -25,11 +25,26 @@ python scripts/convert_models.py
 
 This writes `<model>.fp32.onnx` and `<model>.fp16.onnx` files to `public/models/`, which the dev server serves at `/models/`. The script checks every export against PyTorch before saving it.
 
+### Background remover models
+
+The background remover runs [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) (MIT) at its fixed 1024×1024 input. Generate the files from the official weights with `scripts/convert_birefnet.py` (its requirements are in the script). Don't use onnx-community's ready-made ONNX files: their deformable convolutions need about 10 GB to run, which fails in browsers. The script rewrites them to run in about 3 GB and checks every export against PyTorch.
+
+```sh
+python scripts/convert_birefnet.py
+```
+
+| File                      | Size   | Used for                                      |
+| ------------------------- | ------ | --------------------------------------------- |
+| `birefnet-lite.fp16.onnx` | 97 MB  | Fast                                          |
+| `birefnet-lite.fp32.onnx` | 184 MB | Fast, on devices without fp16 WebGPU          |
+| `birefnet.fp16.onnx`      | 472 MB | High quality (needs WebGPU with `shader-f16`) |
+| `birefnet.fp32.onnx`      | 933 MB | Not used yet                                  |
+
 ### Hosting the models
 
 By default the app loads models from `/models/` on the same site. To serve them from somewhere else, such as a Hugging Face repository or a CDN, set `VITE_MODEL_BASE_URL` (see `.env.example`) to the folder URL, ending in `/`. That server must send `Access-Control-Allow-Origin` headers, because the site is cross-origin isolated (see `vite.config.ts`).
 
-Browsers download each model once and keep it in Cache Storage. If you replace the files at the same URLs, bump `modelCacheName` in `src/worker/upscale.worker.ts` so visitors fetch the new versions.
+Browsers download each model once and keep it in Cache Storage. If you replace the files at the same URLs, bump `modelCacheName` in `src/worker/engine.ts` so visitors fetch the new versions.
 
 ## Roadmap
 
@@ -79,9 +94,10 @@ Ideas for what to build next. Every tool should keep Piksel's promise: it runs o
 
 Each tool gets its own page and an entry in `src/content/tools.ts`, and can reuse the model download and caching, the drop zone, and the before/after slider. Check each model's license before shipping it.
 
-- [ ] **Background remover**: the page at `/remove-background` is built with a placeholder in `src/lib/backgroundRemover.ts`. Still to do:
-  - [ ] Connect the models in a Web Worker, like the upscaler: Fast = U²-Net small ([`u2netp.onnx`](https://github.com/danielgatis/rembg/releases), 4.6 MB, Apache-2.0), High quality = [BiRefNet lite](https://huggingface.co/onnx-community/BiRefNet_lite-ONNX) (115 MB fp16, MIT). Avoid Bria's RMBG models, which are non-commercial.
-  - [ ] Set `available: true` in `src/content/tools.ts` and link the home page card to the page.
+- [ ] **Background remover**: the page at `/remove-background` runs BiRefNet in a Web Worker (`src/worker/remover.worker.ts`). Still to do:
+  - [x] Connect the models: Fast = BiRefNet lite, High quality = BiRefNet. Avoid Bria's RMBG models, which are non-commercial.
+  - [ ] Optionally a top tier with [BiRefNet_HR](https://huggingface.co/ZhengPeng7/BiRefNet_HR) (2048×2048, MIT). It has no published ONNX file, needs converting (its deformable convolutions need `deform_conv2d_onnx_exporter`) and likely more GPU memory than browsers allow.
+  - [x] Set `available: true` in `src/content/tools.ts` and link the home page card to the page.
   - [ ] An erase/restore brush to fix mistakes in the cut-out.
   - [ ] Batch processing.
 - [ ] **Object eraser**: brush over something and AI fills it in. [LaMa](https://github.com/advimman/lama) is Apache-2.0 and is known to run in browsers.

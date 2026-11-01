@@ -8,17 +8,32 @@ import { ArrowRightIcon, ChevronDownIcon, ChipIcon, DownloadIcon, UploadIcon } f
 import { SectionHeading } from './SectionHeading.tsx'
 
 const cardClass = 'overflow-hidden rounded-3xl bg-slate-100 ring-1 ring-slate-900/5'
+const linkClass =
+  'group inline-flex items-center gap-2 rounded-lg bg-ink px-5 py-3 font-semibold text-sky-300 shadow-sm transition-colors hover:bg-ink/85'
 
-// A light card with a title and text, and a small piece of app UI peeking up from the bottom.
+// A card's link to its tool page.
+function ToolLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <a href={href} className={linkClass}>
+      {children}
+      <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+    </a>
+  )
+}
+
+// A light card with a title and text, an optional link, and a small piece of app UI peeking up
+// from the bottom.
 function SmallCard({
   title,
   badge,
   description,
+  link,
   children,
 }: {
   title: string
   badge?: string
   description: string
+  link?: { label: string; href: string }
   children: ReactNode
 }) {
   return (
@@ -30,6 +45,11 @@ function SmallCard({
       )}
       <h3 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{title}</h3>
       <p className="mx-auto mt-3 max-w-sm text-pretty text-slate-600">{description}</p>
+      {link && (
+        <div className="mt-6">
+          <ToolLink href={link.href}>{link.label}</ToolLink>
+        </div>
+      )}
       <div className="mt-auto pt-10">
         <div className="rounded-t-2xl bg-white text-left shadow-sm ring-1 ring-slate-900/5">
           {children}
@@ -141,13 +161,9 @@ export function ToolsBento() {
             <p className="mt-4 max-w-md text-pretty text-slate-600">
               {upscaler.description} Drag the slider to compare a small original with the AI result.
             </p>
-            <a
-              href={upscaler.href}
-              className="group mt-8 inline-flex items-center gap-2 rounded-lg bg-ink px-5 py-3 font-semibold text-sky-300 shadow-sm transition-colors hover:bg-ink/85"
-            >
-              Open the upscaler
-              <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </a>
+            <div className="mt-8">
+              <ToolLink href={upscaler.href}>Open the upscaler</ToolLink>
+            </div>
           </div>
 
           <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5">
@@ -177,6 +193,9 @@ export function ToolsBento() {
           title={remover.name}
           badge={remover.available ? undefined : 'Coming soon'}
           description={remover.description}
+          link={
+            remover.available ? { label: 'Remove a background', href: remover.href } : undefined
+          }
         >
           <RemoverMock />
         </SmallCard>
