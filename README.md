@@ -1,6 +1,6 @@
 # Piksel
 
-A browser-based AI image upscaler powered by Real-ESRGAN, ONNX Runtime Web, and WebGPU. Images are processed locally on your own GPU, so nothing is uploaded to a server, and there are no credits, watermarks, or daily limits. It adapts to your hardware automatically, from high-end GPUs down to older cards like the GTX 1050 Ti, with a CPU fallback for devices without WebGPU.
+Free AI image tools that run in the browser: an upscaler (Real-ESRGAN) and a background remover (BiRefNet), powered by ONNX Runtime Web and WebGPU. Images are processed locally on your own GPU, so nothing is uploaded to a server, and there are no credits, watermarks, or daily limits. It adapts to your hardware automatically, from high-end GPUs down to older cards like the GTX 1050 Ti, with a CPU fallback for devices without WebGPU.
 
 ## Development
 
@@ -10,6 +10,8 @@ npm run dev
 ```
 
 The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. `404.html` is the "page not found" page. Vercel serves it for any URL that doesn't exist, and so do `npm run dev` and `npm run preview` (through a small plugin in `vite.config.ts`). Both tools need their AI model files (below) before they can run.
+
+Full-size source artwork, such as the mascot PNGs, lives in `art/`. The site uses the smaller `.webp` copies in `src/assets/`, so export a new copy there when a picture changes.
 
 ## AI models
 
@@ -57,7 +59,6 @@ Ideas for what to build next. Every tool should keep Piksel's promise: it runs o
 - [ ] Add a license for the code. The footer has an "Open source" column, but the repo has no `LICENSE` file yet, so by default all rights are reserved.
 - [ ] Include Real-ESRGAN's BSD-3 license and copyright notice wherever the model files are hosted; the license requires it when redistributing them.
 - [ ] Connect a custom domain, ideally before promoting the site so shared links don't change.
-- [ ] Decide on the Examples section (`src/components/Examples.tsx` and `src/assets/examples/`): show it on the home page, or delete it. It's currently unused.
 
 ### Small improvements
 

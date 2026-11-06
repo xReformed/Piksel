@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import heroAfter1280 from '../assets/hero-after-1280.webp'
-import heroAfter1920 from '../assets/hero-after-1920.webp'
-import heroBefore from '../assets/hero-before.webp'
+import demoAfter1280 from '../assets/upscaler-demo-after-1280.webp'
+import demoAfter960 from '../assets/upscaler-demo-after-960.webp'
+import demoBefore from '../assets/upscaler-demo-before.webp'
 import { toolsById } from '../content/tools.ts'
 import { CompareSlider } from './CompareSlider.tsx'
 import { ArrowRightIcon, ChevronDownIcon, ChipIcon, DownloadIcon, UploadIcon } from './icons.tsx'
@@ -169,21 +169,22 @@ export function ToolsBento() {
           <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5">
             <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
               <p className="flex items-center gap-1.5 font-semibold text-ink">
-                boathouse.jpg
+                Mira.png
                 <ChevronDownIcon className="size-4 text-slate-400" />
               </p>
               <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-brand-700">
-                4×<span className="hidden sm:inline"> · Real-ESRGAN x4plus</span>
+                4×<span className="hidden sm:inline"> · Real-ESRGAN anime</span>
               </span>
             </div>
             <div className="p-3">
+              {/* A 320 px original and its real 4× result from Real-ESRGAN x4plus anime 6B. */}
               <CompareSlider
-                beforeSrc={heroBefore}
-                afterSrc={heroAfter1920}
-                afterSrcSet={`${heroAfter1280} 1280w, ${heroAfter1920} 1920w`}
+                beforeSrc={demoBefore}
+                afterSrc={demoAfter1280}
+                afterSrcSet={`${demoAfter960} 960w, ${demoAfter1280} 1280w`}
                 sizes="(min-width: 80rem) 44rem, 100vw"
-                alt="Wooden boathouse and rowboats on an alpine lake beneath rocky peaks"
-                className="aspect-4/3 rounded-xl bg-slate-100"
+                alt="Anime illustration of a purple-haired artist resting her chin on her hand at a drawing tablet"
+                className="aspect-square rounded-xl bg-slate-100"
               />
             </div>
           </div>

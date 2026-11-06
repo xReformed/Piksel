@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { tools } from '../content/tools.ts'
 import { CoffeeIcon } from './icons.tsx'
 import { Logo } from './Logo.tsx'
@@ -39,10 +40,21 @@ const year = new Date().getFullYear()
 const externalLinkProps = (href: string) =>
   href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {}
 
-export function SiteFooter() {
+// `children`, such as a tip from the mascot, stands on top of the logo. On large screens it's
+// positioned absolutely, overlapping the page above without taking up space or blocking clicks.
+export function SiteFooter({ children }: { children?: ReactNode }) {
   return (
-    <footer className="mx-auto mt-16 w-full max-w-7xl px-4 sm:mt-24 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-12 py-12 lg:flex-row lg:justify-between">
+    <footer
+      className={`relative mx-auto mt-16 w-full max-w-7xl px-4 sm:mt-24 sm:px-6 lg:px-8 ${children ? 'lg:mt-8' : ''}`}
+    >
+      {children && (
+        <div className="lg:pointer-events-none lg:absolute lg:top-12 lg:left-8 lg:-translate-y-full">
+          {children}
+        </div>
+      )}
+      <div
+        className={`flex flex-col gap-12 pb-12 lg:flex-row lg:justify-between ${children ? 'pt-6 lg:pt-12' : 'pt-12'}`}
+      >
         <div className="max-w-xs">
           <a href="/">
             <Logo />

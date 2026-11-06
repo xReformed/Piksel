@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
-import { ArrowRightIcon, ChipIcon, DownloadIcon } from './components/icons.tsx'
+import { DeviceStatus } from './components/DeviceStatus.tsx'
+import { ArrowRightIcon, DownloadIcon } from './components/icons.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
 import { DropZone } from './components/upscaler/DropZone.tsx'
@@ -8,6 +9,7 @@ import { ImageStage, type Job, type RunningJob } from './components/upscaler/Ima
 import type { LivePreviewHandle } from './components/upscaler/LivePreview.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import { SettingsPanel } from './components/upscaler/SettingsPanel.tsx'
+import { UpscalerTips } from './components/upscaler/UpscalerTips.tsx'
 import { detectDevice, type DeviceInfo } from './lib/device.ts'
 import { handoffParam, takeHandedOffImage } from './lib/handoff.ts'
 import {
@@ -304,23 +306,21 @@ export function UpscalerApp() {
                   </button>
                 )}
 
-                <p className="flex items-center justify-center gap-2 text-center text-sm text-slate-500">
-                  <ChipIcon className="size-4 shrink-0" />
-                  {!device
-                    ? 'Checking your hardware…'
-                    : plan.backend === 'gpu'
-                      ? `Runs on your GPU${device.gpuName ? ` (${device.gpuName})` : ''}`
-                      : device.webgpu
-                        ? 'Runs on your CPU'
-                        : 'No WebGPU here, so it runs on your CPU'}
-                </p>
+                <DeviceStatus
+                  device={device}
+                  backend={plan.backend}
+                  working={running}
+                  cpuReason="CPU, as chosen in the settings · on your device"
+                />
               </div>
             </aside>
           </div>
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter>
+        <UpscalerTips image={image} settings={settings} plan={plan} job={job} />
+      </SiteFooter>
     </div>
   )
 }

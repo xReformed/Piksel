@@ -21,6 +21,8 @@ export type RemoverStage =
 type RemoveOptions = {
   signal: AbortSignal
   onStage: (stage: RemoverStage) => void
+  // Where the model runs: called before each attempt, so a fallback to the CPU is reported too.
+  onBackend: (backend: RemoverJob['backend']) => void
 }
 
 let device: Promise<DeviceInfo> | null = null
@@ -59,9 +61,10 @@ function getWorker(): Worker {
 export async function removeBackground(
   image: ImageBitmap,
   quality: RemoverQuality,
-  { signal, onStage }: RemoveOptions,
+  { signal, onStage, onBackend }: RemoveOptions,
 ): Promise<ImageBitmap> {
   const job = planJob(quality, await getDevice())
+  onBackend(job.backend)
   try {
     return await runJob(image, job, signal, onStage)
   } catch (error) {
@@ -72,6 +75,7 @@ export async function removeBackground(
       })
     }
     const cpuJob: RemoverJob = { modelUrl: modelFileUrl('birefnet-lite.fp32.onnx'), backend: 'cpu' }
+    onBackend(cpuJob.backend)
     return runJob(image, cpuJob, signal, onStage)
   }
 }

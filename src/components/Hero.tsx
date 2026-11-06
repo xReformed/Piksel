@@ -1,6 +1,6 @@
 import cityThumb from '../assets/examples/city-before.webp'
 import foxThumb from '../assets/examples/fox-before.webp'
-import waveThumb from '../assets/examples/wave-before.webp'
+import cutoutThumb from '../assets/hero-cutout.webp'
 import lakeThumb from '../assets/hero-before.webp'
 import onnxLogo from '../assets/technologyicons/ONNX.webp'
 import reactLogo from '../assets/technologyicons/React.webp'
@@ -8,20 +8,33 @@ import realEsrganLogo from '../assets/technologyicons/Real_ESRGAN.webp'
 import webAssemblyLogo from '../assets/technologyicons/WebAssembly.webp'
 import webGpuLogo from '../assets/technologyicons/WebGPU.webp'
 import { inkButton, secondaryButton } from './buttonStyles.ts'
-import { ArrowRightIcon, ZapIcon } from './icons.tsx'
+import { ArrowRightIcon, ScissorsIcon, ZapIcon } from './icons.tsx'
 
 // Example images floating around the headline, each with a cursor pointing towards it.
-// `cursor` places and rotates the pointer (rotate-0 points up and to the left).
+// `cursor` places and rotates the pointer (rotate-0 points up and to the left). The cut-out (a
+// background remover result) sits on the checkerboard that stands for transparency.
 const floatingImages = [
   { src: foxThumb, place: 'top-[12%] left-[3%]', cursor: '-right-4 -bottom-3 rotate-180' },
   { src: cityThumb, place: 'top-[6%] right-[5%]', cursor: '-bottom-3 -left-4 -rotate-90' },
-  { src: waveThumb, place: 'top-[50%] left-[8%]', cursor: '-top-3 -right-5 rotate-90' },
+  {
+    src: cutoutThumb,
+    place: 'top-[50%] left-[8%]',
+    cursor: '-top-3 -right-5 rotate-90',
+    transparent: true,
+  },
   { src: lakeThumb, place: 'top-[56%] right-[3%]', cursor: '-top-4 -left-4 rotate-0' },
 ]
 
+const checkerboard = {
+  backgroundImage: 'repeating-conic-gradient(#e2e8f0 0% 25%, #f8fafc 0% 50%)',
+  backgroundSize: '12px 12px',
+}
+
 // `size` evens out the logos optically: WebAssembly's solid square looks bigger than the rest.
+// BiRefNet has no logo, so it gets the background remover's icon.
 const technologies = [
   { name: 'Real-ESRGAN', logo: realEsrganLogo, size: 'size-10' },
+  { name: 'BiRefNet', Icon: ScissorsIcon, size: 'size-8' },
   { name: 'ONNX Runtime', logo: onnxLogo, size: 'size-10' },
   { name: 'WebGPU', logo: webGpuLogo, size: 'size-10' },
   { name: 'WebAssembly', logo: webAssemblyLogo, size: 'size-8 rounded-sm' },
@@ -45,11 +58,12 @@ function Cursor({ className }: { className: string }) {
 export function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="relative">
-      {floatingImages.map(({ src, place, cursor }) => (
+      {floatingImages.map(({ src, place, cursor, transparent }) => (
         <div key={src} aria-hidden="true" className={`absolute hidden lg:block ${place}`}>
           <img
             src={src}
             alt=""
+            style={transparent ? checkerboard : undefined}
             className="size-16 rounded-full object-cover shadow-lg ring-4 ring-white"
           />
           <Cursor className={cursor} />
@@ -91,16 +105,20 @@ export function Hero() {
         <p className="text-base font-semibold tracking-widest text-slate-500 uppercase">
           Powered by
         </p>
-        {/* Equal columns keep the middle logo exactly under the centred label. */}
-        <ul className="flex w-full flex-wrap items-start justify-center gap-x-10 gap-y-6 md:grid md:grid-cols-5 md:gap-x-4">
-          {technologies.map(({ name, logo, size }) => (
+        {/* Equal columns keep the row centred under the label. */}
+        <ul className="flex w-full flex-wrap items-start justify-center gap-x-10 gap-y-6 md:grid md:grid-cols-6 md:gap-x-4">
+          {technologies.map(({ name, logo, Icon, size }) => (
             <li
               key={name}
               className="flex flex-col items-center gap-2.5 text-center text-lg font-semibold tracking-tight text-slate-400"
             >
               <span className="grid size-10 place-items-center">
-                {/* Multiply blends the white backgrounds of some logo files into the page. */}
-                <img src={logo} alt="" className={`${size} object-contain mix-blend-multiply`} />
+                {Icon ? (
+                  <Icon className={`${size} text-slate-500`} />
+                ) : (
+                  // Multiply blends the white backgrounds of some logo files into the page.
+                  <img src={logo} alt="" className={`${size} object-contain mix-blend-multiply`} />
+                )}
               </span>
               {name}
             </li>

@@ -25,6 +25,7 @@
   --animate-marquee: marquee 50s linear infinite;
   --animate-marquee-reverse: marquee 50s linear infinite reverse;
   --animate-shimmer: shimmer 1.8s ease-in-out infinite;
+  --animate-tip-in: tip-in 350ms ease-out;
 
   @keyframes shimmer {
     from {
@@ -41,6 +42,18 @@
     }
     to {
       transform: translateX(-50%);
+    }
+  }
+
+  /* A new tip in Mira's speech bubble rises into place. */
+  @keyframes tip-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

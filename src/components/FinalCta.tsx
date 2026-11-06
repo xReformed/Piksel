@@ -21,9 +21,12 @@ function PixelCluster({ className }: { className: string }) {
   )
 }
 
-// The closing call to action; `href` is where its button goes. The mascot stands at the bottom
-// edge of the band, reaching towards the button, with her head above the band on large screens.
-export function FinalCta({ href }: { href: string }) {
+type CtaLink = { label: string; href: string }
+
+// The closing call to action, with a button per link; the first is the main one. The mascot stands
+// at the bottom edge of the band, reaching towards the buttons, with her head above the band on
+// large screens.
+export function FinalCta({ links }: { links: CtaLink[] }) {
   return (
     <section aria-labelledby="cta-heading" className="relative isolate mt-24 sm:mt-32 lg:mt-40">
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden rounded-3xl bg-ink">
@@ -38,18 +41,27 @@ export function FinalCta({ href }: { href: string }) {
             id="cta-heading"
             className="text-3xl font-semibold tracking-[-0.03em] text-balance text-white sm:text-5xl"
           >
-            Ready to sharpen your images?
+            Ready to improve your images?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-pretty text-slate-300 lg:mx-0">
             It's free, private and runs right in your browser.
           </p>
-          <a
-            href={href}
-            className="group mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 font-semibold text-ink shadow-sm transition-colors hover:bg-brand-50"
-          >
-            Upscale an image
-            <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+            {links.map(({ label, href }, index) => (
+              <a
+                key={href}
+                href={href}
+                className={`group inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold transition-colors ${
+                  index === 0
+                    ? 'bg-white text-ink shadow-sm hover:bg-brand-50'
+                    : 'text-white ring-1 ring-white/30 hover:bg-white/10'
+                }`}
+              >
+                {label}
+                <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 

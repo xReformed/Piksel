@@ -7,7 +7,7 @@ export const homeSteps: Step[] = [
   {
     Icon: LayersIcon,
     title: 'Pick a tool',
-    description: 'Choose what you want to do, like upscaling an image.',
+    description: 'Choose what you want to do, like upscaling an image or removing its background.',
   },
   {
     Icon: UploadIcon,

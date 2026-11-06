@@ -3,7 +3,7 @@ import { LogoMark } from './Logo.tsx'
 const stats = [
   { value: '4×', label: 'Maximum upscale' },
   { value: '0', label: 'Images uploaded' },
-  { value: '5', label: 'AI models to choose from' },
+  { value: '7', label: 'AI models to choose from' },
 ]
 
 // Piksel's privacy promise, set like a testimonial, with a few facts underneath.

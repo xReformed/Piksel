@@ -88,23 +88,6 @@ export function InfoIcon({ className }: IconProps) {
   )
 }
 
-export function InfinityIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} {...strokeProps}>
-      <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8" />
-    </svg>
-  )
-}
-
-export function LaptopIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} {...strokeProps}>
-      <rect width="18" height="12" x="3" y="4" rx="2" />
-      <path d="M2 20h20" />
-    </svg>
-  )
-}
-
 export function LayersIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} {...strokeProps}>

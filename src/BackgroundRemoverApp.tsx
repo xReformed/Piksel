@@ -6,8 +6,9 @@ import headphonesThumb from './assets/samples/headphones-thumb.webp'
 import sneaker from './assets/samples/sneaker.webp'
 import sneakerThumb from './assets/samples/sneaker-thumb.webp'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
+import { DeviceStatus } from './components/DeviceStatus.tsx'
 import { EmptyState, type Sample } from './components/EmptyState.tsx'
-import { DownloadIcon, LockIcon, MaximizeIcon } from './components/icons.tsx'
+import { DownloadIcon, MaximizeIcon } from './components/icons.tsx'
 import { BackdropPanel, type BackdropKind } from './components/remover/BackdropPanel.tsx'
 import { RemoverStage, type RemoverJob } from './components/remover/RemoverStage.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
@@ -23,6 +24,7 @@ import {
   type Backdrop,
   type RemoverQuality,
 } from './lib/backgroundRemover.ts'
+import type { DeviceInfo } from './lib/device.ts'
 import { handOffImage, handoffParam } from './lib/handoff.ts'
 import { acceptAttribute, loadImage, releaseImage, type LoadedImage } from './lib/image.ts'
 
@@ -44,7 +46,9 @@ const backdropLabels: Record<BackdropKind, string> = {
 
 export function BackgroundRemoverApp() {
   const [quality, setQuality] = useState<RemoverQuality>('fast')
-  const [highQualityAvailable, setHighQualityAvailable] = useState(true)
+  const [device, setDevice] = useState<DeviceInfo | null>(null)
+  // Where the latest run went, which differs from the plan when the GPU fails and the CPU takes over.
+  const [backend, setBackend] = useState<'gpu' | 'cpu' | null>(null)
   const [image, setImage] = useState<LoadedImage | null>(null)
   const [job, setJob] = useState<RemoverJob>({ status: 'idle' })
   const [error, setError] = useState<string | null>(null)
@@ -83,6 +87,9 @@ export function BackgroundRemoverApp() {
         signal: controller.signal,
         onStage: (stage) => {
           if (abortRef.current === controller) setJob({ status: 'running', stage })
+        },
+        onBackend: (next) => {
+          if (abortRef.current === controller) setBackend(next)
         },
       })
       if (abortRef.current === controller) setJob({ status: 'done', mask })
@@ -143,7 +150,7 @@ export function BackgroundRemoverApp() {
   }
 
   useEffect(() => {
-    void getDevice().then((info) => setHighQualityAvailable(supportsHighQuality(info)))
+    void getDevice().then(setDevice)
   }, [])
 
   // Redraw the slider's "After" image whenever the result or the background changes.
@@ -219,6 +226,8 @@ export function BackgroundRemoverApp() {
   }, [])
 
   const done = job.status === 'done'
+  // Until detection finishes, offer High quality rather than flash it as unavailable.
+  const highQualityAvailable = !device || supportsHighQuality(device)
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900 antialiased">
@@ -347,10 +356,12 @@ export function BackgroundRemoverApp() {
                   <MaximizeIcon className="size-4" />
                   {exporting === 'upscale' ? 'Opening the upscaler…' : 'Upscale this'}
                 </button>
-                <p className="flex items-center justify-center gap-2 text-center text-sm text-slate-500">
-                  <LockIcon className="size-4 shrink-0" />
-                  Runs on your device
-                </p>
+                <DeviceStatus
+                  device={device}
+                  backend={backend ?? (device?.webgpu ? 'gpu' : 'cpu')}
+                  working={job.status === 'running'}
+                  cpuReason="Your GPU couldn't run the model, so the CPU took over · on your device"
+                />
               </div>
             </aside>
           </div>

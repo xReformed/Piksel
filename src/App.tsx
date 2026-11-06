@@ -8,6 +8,7 @@ import { SiteHeader } from './components/SiteHeader.tsx'
 import { ToolsBento } from './components/ToolsBento.tsx'
 import { UseCases } from './components/UseCases.tsx'
 import { homeFaqs, homeSteps } from './content/home.ts'
+import { toolsById } from './content/tools.ts'
 
 const container = 'mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'
 
@@ -34,7 +35,12 @@ function App() {
           <HowItWorks steps={homeSteps} />
           <PrivacyPromise />
           <Faq description="Quick answers about privacy, hardware and pricing." items={homeFaqs} />
-          <FinalCta href="/upscaler" />
+          <FinalCta
+            links={[
+              { label: 'Upscale an image', href: toolsById['upscaler'].href },
+              { label: 'Remove a background', href: toolsById['background-remover'].href },
+            ]}
+          />
         </div>
       </main>
       <SiteFooter />
