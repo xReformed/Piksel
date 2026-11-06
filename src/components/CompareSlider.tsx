@@ -110,7 +110,7 @@ export function CompareSlider({
           aria-valuenow={Math.round(position)}
           aria-valuetext={`${Math.round(position)}% original`}
           onKeyDown={handleKeyDown}
-          className="pointer-events-auto absolute top-1/2 left-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          className="pointer-events-auto absolute top-1/2 left-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-slate-800 shadow-lg ring-1 ring-slate-900/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
         >
           <ChevronsLeftRightIcon className="size-5" />
         </div>

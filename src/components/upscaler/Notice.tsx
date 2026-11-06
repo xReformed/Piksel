@@ -2,7 +2,11 @@ import type { ReactNode } from 'react'
 import { AlertIcon, InfoIcon } from '../icons.tsx'
 
 const tones = {
-  info: { box: 'bg-blue-50 text-blue-900 ring-blue-200', icon: 'text-blue-600', Icon: InfoIcon },
+  info: {
+    box: 'bg-brand-50 text-brand-900 ring-brand-200',
+    icon: 'text-brand-600',
+    Icon: InfoIcon,
+  },
   warning: {
     box: 'bg-amber-50 text-amber-900 ring-amber-200',
     icon: 'text-amber-600',

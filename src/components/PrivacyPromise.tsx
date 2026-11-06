@@ -14,7 +14,7 @@ export function PrivacyPromise() {
         Our promise
       </h2>
       <figure className="mx-auto max-w-4xl text-center">
-        <svg viewBox="0 0 40 24" aria-hidden="true" className="mx-auto h-6 text-blue-600">
+        <svg viewBox="0 0 40 24" aria-hidden="true" className="mx-auto h-6 text-brand-600">
           <path d="M8 0h8L10 24H2zM26 0h8l-6 24h-8z" fill="currentColor" />
         </svg>
         <blockquote className="mt-8 text-2xl leading-snug font-semibold tracking-tight text-balance text-ink sm:text-4xl sm:leading-tight">

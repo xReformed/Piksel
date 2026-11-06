@@ -15,7 +15,7 @@ export function Faq({ description, items }: { description: string; items: FaqIte
       <div className="mx-auto mt-12 max-w-3xl divide-y divide-slate-200 border-y border-slate-200">
         {items.map(({ question, answer }) => (
           <details key={question} className="group">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md py-5 font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-md py-5 font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden">
               {question}
               <PlusIcon className="size-5 shrink-0 text-slate-400 transition-transform group-open:rotate-45" />
             </summary>

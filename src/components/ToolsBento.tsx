@@ -9,7 +9,7 @@ import { SectionHeading } from './SectionHeading.tsx'
 
 const cardClass = 'overflow-hidden rounded-3xl bg-slate-100 ring-1 ring-slate-900/5'
 const linkClass =
-  'group inline-flex items-center gap-2 rounded-lg bg-ink px-5 py-3 font-semibold text-sky-300 shadow-sm transition-colors hover:bg-ink/85'
+  'group inline-flex items-center gap-2 rounded-lg bg-ink px-5 py-3 font-semibold text-brand-300 shadow-sm transition-colors hover:bg-ink/85'
 
 // A card's link to its tool page.
 function ToolLink({ href, children }: { href: string; children: ReactNode }) {
@@ -93,7 +93,7 @@ function RemoverMock() {
             height="104"
             rx="10"
             fill="none"
-            stroke="#155dfc"
+            stroke="#913dbb"
             strokeWidth="2"
             strokeDasharray="6 5"
           />
@@ -120,7 +120,7 @@ function PrivacyMock() {
         {privacyRows.map(({ Icon, label, value, good }) => (
           <li key={label} className="flex items-center justify-between gap-4 py-3.5 text-sm">
             <span className="flex items-center gap-3 text-slate-600">
-              <span className="grid size-8 place-items-center rounded-lg bg-blue-50 text-blue-600">
+              <span className="grid size-8 place-items-center rounded-lg bg-brand-50 text-brand-600">
                 <Icon className="size-4" />
               </span>
               {label}
@@ -172,7 +172,7 @@ export function ToolsBento() {
                 boathouse.jpg
                 <ChevronDownIcon className="size-4 text-slate-400" />
               </p>
-              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-blue-700">
+              <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-brand-700">
                 4×<span className="hidden sm:inline"> · Real-ESRGAN x4plus</span>
               </span>
             </div>

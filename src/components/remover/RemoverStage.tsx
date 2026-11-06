@@ -54,7 +54,7 @@ function WorkingOverlay({ stage }: { stage: Stage }) {
       <p className="relative flex items-center gap-2.5 rounded-full bg-white/95 px-4 py-2 text-sm font-medium text-ink shadow-lg ring-1 ring-slate-900/10">
         <span
           aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"
+          className="size-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"
         />
         {stage.name === 'downloading' ? 'Downloading model…' : 'Removing background…'}
       </p>

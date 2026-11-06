@@ -23,9 +23,9 @@ export function DropZone({ onFile }: { onFile: (file: File) => void }) {
       onDragOver={handleDragOver}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
-      className={`flex min-h-88 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors *:pointer-events-none has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue-600 sm:min-h-120 ${
+      className={`flex min-h-88 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors *:pointer-events-none has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-600 sm:min-h-120 ${
         dragging
-          ? 'border-blue-500 bg-blue-50'
+          ? 'border-brand-500 bg-brand-50'
           : 'border-slate-300 bg-slate-50 hover:border-slate-400'
       }`}
     >
@@ -39,11 +39,11 @@ export function DropZone({ onFile }: { onFile: (file: File) => void }) {
           event.target.value = ''
         }}
       />
-      <span className="grid size-14 place-items-center rounded-2xl bg-white text-blue-600 shadow-xs ring-1 ring-slate-900/5">
+      <span className="grid size-14 place-items-center rounded-2xl bg-white text-brand-600 shadow-xs ring-1 ring-slate-900/5">
         <UploadIcon className="size-6" />
       </span>
       <span className="mt-5 text-lg font-semibold text-slate-950">Drop your image here</span>
-      <span className="mt-1 font-medium text-blue-600">or click to browse</span>
+      <span className="mt-1 font-medium text-brand-600">or click to browse</span>
       <span className="mt-4 text-sm text-slate-500">
         PNG, JPG or WebP. You can also paste an image.
       </span>

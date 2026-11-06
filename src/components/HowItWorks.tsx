@@ -31,10 +31,10 @@ export function HowItWorks({ steps }: { steps: Step[] }) {
                 className="absolute top-7 left-[calc(50%+2.75rem)] hidden w-[calc(100%-3.5rem)] border-t-2 border-dashed border-slate-200 md:block"
               />
             )}
-            <div className="grid size-14 place-items-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-600/20">
+            <div className="grid size-14 place-items-center rounded-2xl bg-brand-600 text-white shadow-md shadow-brand-600/20">
               <Icon className="size-6" />
             </div>
-            <p className="mt-5 text-sm font-semibold text-blue-600">Step {index + 1}</p>
+            <p className="mt-5 text-sm font-semibold text-brand-600">Step {index + 1}</p>
             <h3 className="mt-1 text-lg font-semibold text-slate-950">{title}</h3>
             <p className="mt-2 max-w-xs text-sm/6 text-slate-600">{description}</p>
           </li>
@@ -42,7 +42,7 @@ export function HowItWorks({ steps }: { steps: Step[] }) {
       </ol>
 
       <div className="mx-auto mt-14 flex max-w-3xl gap-4 rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-900/5 sm:p-6">
-        <LockIcon className="mt-0.5 size-5 shrink-0 text-blue-600" />
+        <LockIcon className="mt-0.5 size-5 shrink-0 text-brand-600" />
         <p className="text-sm/6 text-slate-600">
           <span className="font-semibold text-slate-950">What happens behind the scenes: </span>
           the first time you use a tool, Piksel downloads its AI model into your browser and saves

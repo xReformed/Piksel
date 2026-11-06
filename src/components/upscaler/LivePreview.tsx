@@ -18,8 +18,8 @@ type LivePreviewProps = {
 const maxPreviewSide = 2048
 // The detail inset shows this many output pixels square, one per CSS pixel.
 const detailSize = 176
-const highlightColor = '#155dfc' // Tailwind blue-600
-const highlightFill = 'rgba(21, 93, 252, 0.18)'
+const highlightColor = '#913dbb' // brand-600 in index.css
+const highlightFill = 'rgba(145, 61, 187, 0.18)'
 
 export function LivePreview({ ref, imageUrl, outputWidth, outputHeight }: LivePreviewProps) {
   const previewRef = useRef<HTMLCanvasElement>(null)

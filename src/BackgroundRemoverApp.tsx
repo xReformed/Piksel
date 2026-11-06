@@ -1,8 +1,14 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
+import cat from './assets/samples/cat.webp'
+import catThumb from './assets/samples/cat-thumb.webp'
+import headphones from './assets/samples/headphones.webp'
+import headphonesThumb from './assets/samples/headphones-thumb.webp'
+import sneaker from './assets/samples/sneaker.webp'
+import sneakerThumb from './assets/samples/sneaker-thumb.webp'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
+import { EmptyState, type Sample } from './components/EmptyState.tsx'
 import { DownloadIcon, LockIcon, MaximizeIcon } from './components/icons.tsx'
 import { BackdropPanel, type BackdropKind } from './components/remover/BackdropPanel.tsx'
-import { EmptyState } from './components/remover/EmptyState.tsx'
 import { RemoverStage, type RemoverJob } from './components/remover/RemoverStage.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
@@ -19,6 +25,12 @@ import {
 } from './lib/backgroundRemover.ts'
 import { handOffImage, handoffParam } from './lib/handoff.ts'
 import { acceptAttribute, loadImage, releaseImage, type LoadedImage } from './lib/image.ts'
+
+const samples: Sample[] = [
+  { name: 'headphones', src: headphones, thumb: headphonesThumb, alt: 'Headphones on yellow' },
+  { name: 'sneaker', src: sneaker, thumb: sneakerThumb, alt: 'Grey sneaker on white' },
+  { name: 'cat', src: cat, thumb: catThumb, alt: 'Cat against a green wall' },
+]
 
 // The "After" side of the slider is drawn at most this size; downloads are full size.
 const previewSide = 1600
@@ -267,7 +279,7 @@ export function BackgroundRemoverApp() {
                   onRemove={removeImage}
                 />
               ) : (
-                <EmptyState onFile={openFile} />
+                <EmptyState onFile={openFile} samples={samples} />
               )}
               <input
                 ref={replaceInputRef}

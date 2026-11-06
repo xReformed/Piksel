@@ -50,7 +50,7 @@ function MarqueeRow({ items, reverse = false }: { items: UseCase[]; reverse?: bo
             aria-hidden={index >= items.length ? 'true' : undefined}
             className="flex size-28 shrink-0 flex-col items-center justify-center gap-2.5 rounded-2xl bg-white shadow-lg shadow-black/10"
           >
-            <Icon className="size-7 text-blue-600" />
+            <Icon className="size-7 text-brand-600" />
             <span className="text-xs font-semibold text-ink">{label}</span>
           </li>
         ))}
@@ -69,7 +69,7 @@ export function UseCases() {
 
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-slate-200 uppercase ring-1 ring-white/15">
-          <SparklesIcon className="size-3.5 text-sky-300" />
+          <SparklesIcon className="size-3.5 text-brand-300" />
           Any image
         </p>
         <h2

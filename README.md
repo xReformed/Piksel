@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. Both tools need their AI model files (below) before they can run.
+The home page (an overview of all tools) is at `/`, the upscaler at `/upscaler` (`/app` redirects there on Vercel), and the background remover at `/remove-background`. Each tool is its own page: an HTML entry in `vite.config.ts` plus an item in `src/content/tools.ts`. `404.html` is the "page not found" page. Vercel serves it for any URL that doesn't exist, and so do `npm run dev` and `npm run preview` (through a small plugin in `vite.config.ts`). Both tools need their AI model files (below) before they can run.
 
 ## AI models
 
@@ -100,9 +100,14 @@ Each tool gets its own page and an entry in `src/content/tools.ts`, and can reus
   - [x] Set `available: true` in `src/content/tools.ts` and link the home page card to the page.
   - [ ] An erase/restore brush to fix mistakes in the cut-out.
   - [ ] Batch processing.
-- [ ] **Object eraser**: brush over something and AI fills it in. [LaMa](https://github.com/advimman/lama) is Apache-2.0 and is known to run in browsers.
+- [ ] **Inpainting** (object eraser): brush over something and AI fills it in. The page at `/remove-objects` is built (brush, undo and redo, hold to compare, download), but `src/lib/objectEraser.ts` is a placeholder that blends nearby colors instead of running AI. Still to do:
+  - [ ] Connect [LaMa](https://github.com/advimman/lama) (Apache-2.0) in a Web Worker. Its Fourier-transform layers need rewriting to run on WebGPU (see [this export](https://huggingface.co/imagingforgood/lama-512-onnx)), and it works on a 512×512 crop around the brushed area.
+  - [ ] Set `available: true` in `src/content/tools.ts` and add the tool to the home page.
+  - [ ] Optionally a Fast tier with [MI-GAN](https://github.com/Picsart-AI-Research/MI-GAN) (MIT), and click-to-select with SlimSAM.
+  - [ ] Zoom and pan, for brushing small things precisely in large photos.
 - [ ] **Face restoration** for old or blurry photos, pairing well with upscaling. [GFPGAN](https://github.com/TencentARC/GFPGAN) is the usual choice (check the license details); avoid CodeFormer, which is non-commercial.
 - [ ] **Colorize black-and-white photos**, e.g. with [DeOldify](https://github.com/jantic/DeOldify) (MIT).
-- [ ] **Format converter**: HEIC to JPG, PNG to WebP or AVIF. No AI needed, and people search for it constantly.
-- [ ] **Image compressor and resizer**: also no AI, and good for bringing in visitors who then find the other tools.
+- [ ] **Face and license-plate blur**: automatically blur faces before sharing a photo, a natural fit for Piksel's privacy focus. [MediaPipe face detection](https://ai.google.dev/edge/mediapipe/solutions/vision/face_detector) is Apache-2.0; license plates need a separate detector.
+- [ ] **Image to text (OCR)**: copy text out of screenshots and photos with [Tesseract.js](https://github.com/naptha/tesseract.js) (Apache-2.0).
+- [ ] **Portrait blur**: blur the background by distance, like a phone's portrait mode, using [Depth Anything V2 Small](https://huggingface.co/depth-anything/Depth-Anything-V2-Small) (Apache-2.0). Its larger versions are non-commercial.
 - [ ] **Video and GIF upscaling** with `realesr-animevideov3` and WebCodecs. The most ambitious idea here.

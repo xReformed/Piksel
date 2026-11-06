@@ -62,7 +62,7 @@ export function Segmented<T extends string | number>({
             onClick={() => onChange(option.value)}
             className={`h-10 rounded-lg border px-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
               selected
-                ? 'border-blue-600 bg-blue-50 text-blue-700 ring-1 ring-blue-600'
+                ? 'border-brand-600 bg-brand-50 text-brand-700 ring-1 ring-brand-600'
                 : 'border-slate-200 bg-white text-slate-700 enabled:hover:border-slate-300 enabled:hover:text-slate-950'
             }`}
           >
@@ -88,7 +88,7 @@ export function Select({ id, value, onChange, children }: SelectProps) {
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-sm text-slate-900 transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-sm text-slate-900 transition-colors hover:border-slate-300 focus:border-brand-600 focus:ring-1 focus:ring-brand-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
       >
         {children}
       </select>
@@ -116,7 +116,7 @@ export function Range({ id, value, min, max, step, onChange }: RangeProps) {
       step={step}
       value={value}
       onChange={(event) => onChange(event.target.valueAsNumber)}
-      className="w-full cursor-pointer accent-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+      className="w-full cursor-pointer accent-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
     />
   )
 }
@@ -135,8 +135,8 @@ export function Switch({ label, checked, onChange }: SwitchProps) {
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-40 ${
-        checked ? 'bg-blue-600' : 'bg-slate-200'
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:cursor-not-allowed disabled:opacity-40 ${
+        checked ? 'bg-brand-600' : 'bg-slate-200'
       }`}
     >
       <span

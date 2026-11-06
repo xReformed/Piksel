@@ -32,9 +32,9 @@ export function ProgressFooter({
         className="absolute inset-x-0 top-0 h-1 overflow-hidden bg-slate-200"
       >
         {percent === null ? (
-          <div className="h-full w-full animate-pulse bg-blue-600/50" />
+          <div className="h-full w-full animate-pulse bg-brand-600/50" />
         ) : (
-          <div className="h-full bg-blue-600" style={{ width: `${percent}%` }} />
+          <div className="h-full bg-brand-600" style={{ width: `${percent}%` }} />
         )}
       </div>
       <div className="flex items-center justify-between gap-3">

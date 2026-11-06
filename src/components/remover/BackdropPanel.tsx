@@ -55,7 +55,7 @@ function KindTile({
       onClick={onClick}
       className={`flex flex-col items-center gap-1.5 rounded-xl p-1.5 pb-2 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
         selected
-          ? 'bg-blue-50 text-blue-700 ring-2 ring-blue-600'
+          ? 'bg-brand-50 text-brand-700 ring-2 ring-brand-600'
           : 'text-slate-700 ring-1 ring-slate-200 enabled:hover:ring-slate-300'
       }`}
     >
@@ -100,7 +100,7 @@ export function BackdropPanel({
             <span className="block size-full" style={{ backgroundColor: color }} />
           </KindTile>
           <KindTile label="Blur" selected={kind === 'blur'} onClick={() => onKindChange('blur')}>
-            <span className="block size-full scale-125 bg-linear-to-br from-sky-300 via-blue-500 to-emerald-300 blur-[3px]" />
+            <span className="block size-full scale-125 bg-linear-to-br from-brand-300 via-brand-500 to-emerald-300 blur-[3px]" />
           </KindTile>
           <KindTile
             label="Image"
@@ -128,7 +128,7 @@ export function BackdropPanel({
                 aria-label={swatch}
                 aria-pressed={swatch === color}
                 onClick={() => onColorChange(swatch)}
-                className={`size-8 rounded-full transition ${swatch === color ? 'ring-2 ring-blue-600 ring-offset-2' : 'ring-1 ring-slate-900/15'}`}
+                className={`size-8 rounded-full transition ${swatch === color ? 'ring-2 ring-brand-600 ring-offset-2' : 'ring-1 ring-slate-900/15'}`}
                 style={{ backgroundColor: swatch }}
               />
             ))}

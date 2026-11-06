@@ -2,6 +2,11 @@ import cityThumb from '../assets/examples/city-before.webp'
 import foxThumb from '../assets/examples/fox-before.webp'
 import waveThumb from '../assets/examples/wave-before.webp'
 import lakeThumb from '../assets/hero-before.webp'
+import onnxLogo from '../assets/technologyicons/ONNX.webp'
+import reactLogo from '../assets/technologyicons/React.webp'
+import realEsrganLogo from '../assets/technologyicons/Real_ESRGAN.webp'
+import webAssemblyLogo from '../assets/technologyicons/WebAssembly.webp'
+import webGpuLogo from '../assets/technologyicons/WebGPU.webp'
 import { inkButton, secondaryButton } from './buttonStyles.ts'
 import { ArrowRightIcon, ZapIcon } from './icons.tsx'
 
@@ -14,7 +19,14 @@ const floatingImages = [
   { src: lakeThumb, place: 'top-[56%] right-[3%]', cursor: '-top-4 -left-4 rotate-0' },
 ]
 
-const technologies = ['Real-ESRGAN', 'ONNX Runtime', 'WebGPU', 'WebAssembly', 'React']
+// `size` evens out the logos optically: WebAssembly's solid square looks bigger than the rest.
+const technologies = [
+  { name: 'Real-ESRGAN', logo: realEsrganLogo, size: 'size-10' },
+  { name: 'ONNX Runtime', logo: onnxLogo, size: 'size-10' },
+  { name: 'WebGPU', logo: webGpuLogo, size: 'size-10' },
+  { name: 'WebAssembly', logo: webAssemblyLogo, size: 'size-8 rounded-sm' },
+  { name: 'React', logo: reactLogo, size: 'size-10' },
+]
 
 function Cursor({ className }: { className: string }) {
   return (
@@ -46,7 +58,7 @@ export function Hero() {
 
       <div className="mx-auto flex max-w-3xl flex-col items-center pt-12 pb-16 text-center sm:pt-20 sm:pb-20">
         <p className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold tracking-wide text-ink uppercase shadow-xs ring-1 ring-slate-900/10">
-          <ZapIcon className="size-3.5 text-blue-600" />
+          <ZapIcon className="size-3.5 text-brand-600" />
           Runs on your GPU
         </p>
         <h1
@@ -55,7 +67,7 @@ export function Hero() {
         >
           Better images.
           <br />
-          <span className="relative isolate inline-block after:absolute after:inset-x-0 after:bottom-[0.04em] after:-z-10 after:h-[0.18em] after:rounded-full after:bg-sky-300">
+          <span className="relative isolate inline-block after:absolute after:inset-x-0 after:bottom-[0.04em] after:-z-10 after:h-[0.18em] after:rounded-full after:bg-brand-300">
             Without
           </span>{' '}
           the upload.
@@ -75,13 +87,21 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-5 pb-4 sm:flex-row sm:gap-12">
-        <p className="shrink-0 text-sm font-medium text-slate-600 sm:max-w-32">
-          Built on open technology
+      <div className="flex flex-col items-center gap-8 pb-4">
+        <p className="text-base font-semibold tracking-widest text-slate-500 uppercase">
+          Powered by
         </p>
-        <ul className="flex flex-1 flex-wrap items-center justify-center gap-x-10 gap-y-3 sm:justify-between">
-          {technologies.map((name) => (
-            <li key={name} className="text-lg font-semibold tracking-tight text-slate-400">
+        {/* Equal columns keep the middle logo exactly under the centred label. */}
+        <ul className="flex w-full flex-wrap items-start justify-center gap-x-10 gap-y-6 md:grid md:grid-cols-5 md:gap-x-4">
+          {technologies.map(({ name, logo, size }) => (
+            <li
+              key={name}
+              className="flex flex-col items-center gap-2.5 text-center text-lg font-semibold tracking-tight text-slate-400"
+            >
+              <span className="grid size-10 place-items-center">
+                {/* Multiply blends the white backgrounds of some logo files into the page. */}
+                <img src={logo} alt="" className={`${size} object-contain mix-blend-multiply`} />
+              </span>
               {name}
             </li>
           ))}

@@ -2,7 +2,7 @@
 const base =
   'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50'
 
-export const primaryButton = `${base} bg-blue-600 text-white shadow-sm hover:bg-blue-700 disabled:hover:bg-blue-600`
+export const primaryButton = `${base} bg-brand-600 text-white shadow-sm hover:bg-brand-700 disabled:hover:bg-brand-600`
 
 export const inkButton = `${base} bg-ink text-white shadow-sm hover:bg-ink/85`
 

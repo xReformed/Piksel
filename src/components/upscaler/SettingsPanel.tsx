@@ -133,7 +133,7 @@ export function SettingsPanel({
       )}
 
       <details className="group border-t border-slate-200 pt-5">
-        <summary className="flex cursor-pointer list-none items-center justify-between rounded-md text-sm font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 [&::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between rounded-md text-sm font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden">
           Advanced settings
           <ChevronDownIcon className="size-4 text-slate-400 transition-transform group-open:rotate-180" />
         </summary>
@@ -364,7 +364,7 @@ export function SettingsPanel({
           <button
             type="button"
             onClick={() => onChange(advancedDefaults)}
-            className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 disabled:opacity-40"
+            className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-700 disabled:opacity-40"
           >
             Reset advanced settings
           </button>
