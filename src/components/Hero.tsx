@@ -8,7 +8,7 @@ import realEsrganLogo from '../assets/technologyicons/Real_ESRGAN.webp'
 import webAssemblyLogo from '../assets/technologyicons/WebAssembly.webp'
 import webGpuLogo from '../assets/technologyicons/WebGPU.webp'
 import { inkButton, secondaryButton } from './buttonStyles.ts'
-import { ArrowRightIcon, ScissorsIcon, ZapIcon } from './icons.tsx'
+import { ArrowRightIcon, EraserIcon, ScissorsIcon, ZapIcon } from './icons.tsx'
 
 // Example images floating around the headline, each with a cursor pointing towards it.
 // `cursor` places and rotates the pointer (rotate-0 points up and to the left). The cut-out (a
@@ -31,10 +31,11 @@ const checkerboard = {
 }
 
 // `size` evens out the logos optically: WebAssembly's solid square looks bigger than the rest.
-// BiRefNet has no logo, so it gets the background remover's icon.
+// BiRefNet and LaMa have no logos, so they get their tools' icons.
 const technologies = [
   { name: 'Real-ESRGAN', logo: realEsrganLogo, size: 'size-10' },
   { name: 'BiRefNet', Icon: ScissorsIcon, size: 'size-8' },
+  { name: 'LaMa', Icon: EraserIcon, size: 'size-8' },
   { name: 'ONNX Runtime', logo: onnxLogo, size: 'size-10' },
   { name: 'WebGPU', logo: webGpuLogo, size: 'size-10' },
   { name: 'WebAssembly', logo: webAssemblyLogo, size: 'size-8 rounded-sm' },
@@ -106,7 +107,7 @@ export function Hero() {
           Powered by
         </p>
         {/* Equal columns keep the row centred under the label. */}
-        <ul className="flex w-full flex-wrap items-start justify-center gap-x-10 gap-y-6 md:grid md:grid-cols-6 md:gap-x-4">
+        <ul className="flex w-full flex-wrap items-start justify-center gap-x-10 gap-y-6 md:grid md:grid-cols-7 md:gap-x-4">
           {technologies.map(({ name, logo, Icon, size }) => (
             <li
               key={name}

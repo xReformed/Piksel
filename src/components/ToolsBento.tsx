@@ -103,6 +103,42 @@ function RemoverMock() {
   )
 }
 
+// A beach scene with a brush stroke over the person standing on the sand, about to be erased.
+function EraserMock() {
+  return (
+    <>
+      <PanelHeader
+        title="beach.jpg"
+        aside={<span className="text-xs font-medium text-slate-500">Brush to erase</span>}
+      />
+      <svg
+        viewBox="0 0 400 176"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+        className="block h-44 w-full"
+      >
+        <rect width="400" height="176" fill="#e0f2fe" />
+        <circle cx="310" cy="48" r="22" fill="#fde68a" />
+        <rect y="90" width="400" height="40" fill="#bae6fd" />
+        <path d="M0 122c60-10 120 6 200-2s140-12 200-2v58H0z" fill="#fef3c7" />
+        <circle cx="150" cy="96" r="9" fill="#94a3b8" />
+        <rect x="141" y="107" width="18" height="34" rx="8" fill="#94a3b8" />
+        <path
+          d="M140 86 158 90 138 104 162 108 138 122 162 126 140 140 158 144"
+          fill="none"
+          stroke="#913dbb"
+          strokeOpacity="0.45"
+          strokeWidth="20"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="158" cy="144" r="10" fill="none" stroke="white" strokeWidth="2.5" />
+        <circle cx="158" cy="144" r="10" fill="none" stroke="var(--color-ink)" strokeWidth="1" />
+      </svg>
+    </>
+  )
+}
+
 const privacyRows = [
   { Icon: UploadIcon, label: 'Uploaded to a server', value: 'Never', good: true },
   { Icon: ChipIcon, label: 'Processed on', value: 'Your GPU' },
@@ -137,10 +173,12 @@ function PrivacyMock() {
   )
 }
 
-// The home page's tools, as a bento grid: the upscaler large, then smaller cards.
+// The home page's tools, as a bento grid: the upscaler large, the other two tools side by side,
+// then the privacy card across the full width.
 export function ToolsBento() {
   const upscaler = toolsById['upscaler']
   const remover = toolsById['background-remover']
+  const eraser = toolsById['inpainting']
 
   return (
     <section id="tools" aria-labelledby="tools-heading" className="mt-24 scroll-mt-8 sm:mt-32">
@@ -202,11 +240,30 @@ export function ToolsBento() {
         </SmallCard>
 
         <SmallCard
-          title="Private by design"
-          description="Every tool runs in your browser on your own hardware. Your images are never uploaded, stored or seen by anyone else."
+          title={eraser.name}
+          badge={eraser.available ? undefined : 'Coming soon'}
+          description={eraser.description}
+          link={eraser.available ? { label: 'Erase objects', href: eraser.href } : undefined}
         >
-          <PrivacyMock />
+          <EraserMock />
         </SmallCard>
+
+        <div
+          className={`${cardClass} grid items-center gap-10 p-6 sm:p-10 lg:col-span-2 lg:grid-cols-[3fr_2fr]`}
+        >
+          <div>
+            <h3 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+              Private by design
+            </h3>
+            <p className="mt-4 max-w-md text-pretty text-slate-600">
+              Every tool runs in your browser on your own hardware. Your images are never uploaded,
+              stored or seen by anyone else.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5 lg:order-first">
+            <PrivacyMock />
+          </div>
+        </div>
       </div>
     </section>
   )
