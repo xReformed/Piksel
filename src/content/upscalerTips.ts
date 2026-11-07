@@ -1,26 +1,25 @@
-// Mira's tips on the upscaler page. A tip with `when` shows by itself while its situation applies
-// (the first match wins, so order them from most to least specific); "Next tip" cycles through all.
+// Mira's tips on the upscaler page. See tips.ts for how they're picked.
 import type { Job } from '../components/upscaler/ImageStage.tsx'
 import type { LoadedImage } from '../lib/image.ts'
 import type { Plan, Settings } from '../lib/settings.ts'
+import type { Tip } from './tips.ts'
 
-export type TipContext = {
+export type UpscalerTipContext = {
   image: LoadedImage | null
   settings: Settings
   plan: Plan
   job: Job
 }
 
-export type Tip = {
-  id: string
-  text: string | ((context: TipContext) => string)
-  when?: (context: TipContext) => boolean
-}
-
 // The smallest size, per side, that has enough detail for a sharp result.
 const minSide = 480
 
-export const upscalerTips: Tip[] = [
+// Photos with more pixels than 4K (3840×2160) make Mira gasp.
+const fourKPixels = 3840 * 2160
+const isOver4K = (image: LoadedImage | null) =>
+  image !== null && image.width * image.height > fourKPixels
+
+export const upscalerTips: Tip<UpscalerTipContext>[] = [
   {
     id: 'download-once',
     text: 'The first run downloads the AI model, but only once. After that it loads straight from your browser, even offline.',
@@ -43,6 +42,15 @@ export const upscalerTips: Tip[] = [
     id: 'webp',
     text: 'PNG keeps every detail, but the files are big. For sharing online, WebP looks nearly the same at a fraction of the size.',
     when: ({ job }) => job.status === 'done' && job.format === 'png' && job.size > 10_000_000,
+  },
+  {
+    id: 'over-4k',
+    text: ({ image, plan }) =>
+      image && isOver4K(image)
+        ? `Whoa, ${image.width}×${image.height} is already bigger than 4K! Upscaling makes it ${plan.outputWidth}×${plan.outputHeight}, which takes a while and makes a huge file.${plan.outputScale > 2 ? ' For a photo this big, 2× is usually plenty.' : ''}`
+        : 'Photos bigger than 4K take much longer to upscale and make huge files. For those, 2× is usually plenty.',
+    when: ({ image, job }) => isOver4K(image) && job.status !== 'running',
+    pose: 'surprised',
   },
   {
     id: 'cpu',
@@ -80,12 +88,3 @@ export const upscalerTips: Tip[] = [
     text: "Want a sharp cut-out? Remove the background first, then press 'Upscale this'. It comes straight here.",
   },
 ]
-
-// The tip whose situation applies right now, or null when none does.
-export function situationTip(context: TipContext): Tip | null {
-  return upscalerTips.find((tip) => tip.when?.(context)) ?? null
-}
-
-export function tipText(tip: Tip, context: TipContext): string {
-  return typeof tip.text === 'function' ? tip.text(context) : tip.text
-}

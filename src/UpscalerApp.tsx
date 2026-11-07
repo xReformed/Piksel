@@ -1,6 +1,8 @@
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState, type CSSProperties } from 'react'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
 import { DeviceStatus } from './components/DeviceStatus.tsx'
+import { MascotTips } from './components/MascotTips.tsx'
+import { Ouroboro } from './components/Ouroboro.tsx'
 import { ArrowRightIcon, DownloadIcon } from './components/icons.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
@@ -9,7 +11,6 @@ import { ImageStage, type Job, type RunningJob } from './components/upscaler/Ima
 import type { LivePreviewHandle } from './components/upscaler/LivePreview.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
 import { SettingsPanel } from './components/upscaler/SettingsPanel.tsx'
-import { UpscalerTips } from './components/upscaler/UpscalerTips.tsx'
 import { detectDevice, type DeviceInfo } from './lib/device.ts'
 import { handoffParam, takeHandedOffImage } from './lib/handoff.ts'
 import {
@@ -24,6 +25,7 @@ import {
 } from './lib/image.ts'
 import { loadSettings, resolvePlan, saveSettings, type Settings } from './lib/settings.ts'
 import { upscale } from './lib/upscaler.ts'
+import { upscalerTips } from './content/upscalerTips.ts'
 
 // Used until hardware detection finishes; the Upscale button stays disabled meanwhile.
 const undetectedDevice: DeviceInfo = {
@@ -43,6 +45,12 @@ export function UpscalerApp() {
   const abortRef = useRef<AbortController | null>(null)
   const replaceInputRef = useRef<HTMLInputElement>(null)
   const previewRef = useRef<LivePreviewHandle>(null)
+  const settingsCardRef = useRef<HTMLElement>(null)
+  const settingsScrollRef = useRef<HTMLDivElement>(null)
+  // While Advanced settings is open on large screens, the settings card keeps the height it had
+  // when closed: the extra settings scroll inside it instead of pushing the page (and Mira, in the
+  // footer) down.
+  const [lockedCardHeight, setLockedCardHeight] = useState<number | null>(null)
 
   const plan = resolvePlan(settings, device ?? undetectedDevice, image)
   const running = job.status === 'running'
@@ -60,6 +68,27 @@ export function UpscalerApp() {
   useEffect(() => {
     saveSettings(settings)
   }, [settings])
+
+  function toggleAdvanced(summary: HTMLElement, opening: boolean) {
+    const card = settingsCardRef.current
+    if (!opening || !card) {
+      setLockedCardHeight(null)
+      return
+    }
+    if (!window.matchMedia('(min-width: 64rem)').matches) return
+    setLockedCardHeight(card.offsetHeight)
+    // Scroll the newly opened settings into view, once the section has opened.
+    requestAnimationFrame(() => {
+      const scroller = settingsScrollRef.current
+      if (!scroller) return
+      const offset = summary.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      scroller.scrollTo({
+        top: scroller.scrollTop + offset - 20,
+        behavior: reduceMotion ? 'auto' : 'smooth',
+      })
+    })
+  }
 
   function updateSettings(changes: Partial<Settings>) {
     setSettings((current) => ({ ...current, ...changes }))
@@ -198,7 +227,7 @@ export function UpscalerApp() {
             </p>
           </div>
 
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:grid-rows-[auto_1fr]">
             <section aria-label="Image" className="min-w-0 space-y-4">
               {error && <Notice tone="error">{error}</Notice>}
               {image ? (
@@ -227,31 +256,38 @@ export function UpscalerApp() {
             </section>
 
             <aside
-              aria-label="Settings"
-              className="flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10 lg:max-h-[calc(100vh-3rem)]"
+              ref={settingsCardRef}
+              aria-labelledby="settings-heading"
+              style={
+                lockedCardHeight === null
+                  ? undefined
+                  : ({ '--locked-height': `${lockedCardHeight}px` } as CSSProperties)
+              }
+              className={`flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10 lg:row-span-2 lg:max-h-[calc(100vh-3rem)] ${lockedCardHeight === null ? '' : 'lg:h-(--locked-height)'}`}
             >
               {/* On large screens the panel is capped at the viewport height: long settings scroll
                 inside it, so the buttons below stay within one screen. */}
-              <div className="space-y-6 p-5 sm:p-6 lg:overflow-y-auto">
-                <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
-                  <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                    Result size
-                  </p>
-                  {image ? (
+              <div ref={settingsScrollRef} className="space-y-6 p-5 sm:p-6 lg:overflow-y-auto">
+                <h2 id="settings-heading" className="text-lg font-semibold text-slate-950">
+                  Settings
+                </h2>
+
+                {/* Shown once there's an image to work out the size from. */}
+                {image && (
+                  <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
+                    <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                      Result size
+                    </p>
                     <p className="mt-1 font-semibold text-slate-950 tabular-nums">
                       {image.width} × {image.height}
                       <span className="mx-1.5 text-slate-400">→</span>
                       {plan.outputWidth} × {plan.outputHeight}
                     </p>
-                  ) : (
-                    <p className="mt-1 text-sm text-slate-500">
-                      Add an image to see the result size.
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatScale(plan.outputScale)}× with {plan.model.name}
                     </p>
-                  )}
-                  <p className="mt-1 text-xs text-slate-500">
-                    {formatScale(plan.outputScale)}× with {plan.model.name}
-                  </p>
-                </div>
+                  </div>
+                )}
 
                 <SettingsPanel
                   settings={settings}
@@ -260,6 +296,7 @@ export function UpscalerApp() {
                   device={device ?? undetectedDevice}
                   hasAlpha={image?.hasAlpha ?? false}
                   disabled={running}
+                  onAdvancedToggle={toggleAdvanced}
                 />
               </div>
 
@@ -299,6 +336,7 @@ export function UpscalerApp() {
                     disabled={!image || !device || plan.tooLarge || running}
                     className={`${primaryButton} group h-12 w-full`}
                   >
+                    {running && <Ouroboro className="size-5" />}
                     {running ? 'Upscaling…' : 'Upscale image'}
                     {!running && (
                       <ArrowRightIcon className="size-4 transition-transform group-enabled:group-hover:translate-x-0.5" />
@@ -314,13 +352,18 @@ export function UpscalerApp() {
                 />
               </div>
             </aside>
+
+            {/* Mira, under the image on the left. On large screens the card on the right spans
+                both rows, so she fills the space beside a tall card without ever covering the
+                image; on small screens she comes after the settings. */}
+            <div className="lg:col-start-1">
+              <MascotTips tips={upscalerTips} context={{ image, settings, plan, job }} />
+            </div>
           </div>
         </section>
       </main>
 
-      <SiteFooter>
-        <UpscalerTips image={image} settings={settings} plan={plan} job={job} />
-      </SiteFooter>
+      <SiteFooter tight />
     </div>
   )
 }

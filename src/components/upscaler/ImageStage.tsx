@@ -173,6 +173,7 @@ function ProgressBar({ job, onCancel }: { job: RunningJob; onCancel: () => void 
   return (
     <ProgressFooter
       label="Upscaling progress"
+      spinner
       title={title}
       detail={detail}
       percent={percent}

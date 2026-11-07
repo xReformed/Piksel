@@ -2,6 +2,7 @@ import type { RemoverStage as Stage } from '../../lib/backgroundRemover.ts'
 import { formatBytes, formatMB, type LoadedImage } from '../../lib/image.ts'
 import { primaryButton, secondaryButton } from '../buttonStyles.ts'
 import { CompareSlider } from '../CompareSlider.tsx'
+import { Ouroboro } from '../Ouroboro.tsx'
 import { ProgressFooter } from '../ProgressFooter.tsx'
 
 export type RemoverJob =
@@ -52,10 +53,7 @@ function WorkingOverlay({ stage }: { stage: Stage }) {
         className="absolute inset-0 animate-shimmer bg-linear-to-r from-transparent via-white/60 to-transparent motion-reduce:hidden"
       />
       <p className="relative flex items-center gap-2.5 rounded-full bg-white/95 px-4 py-2 text-sm font-medium text-ink shadow-lg ring-1 ring-slate-900/10">
-        <span
-          aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"
-        />
+        <Ouroboro />
         {stage.name === 'downloading' ? 'Downloading model…' : 'Removing background…'}
       </p>
     </div>

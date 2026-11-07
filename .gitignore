@@ -42,3 +42,6 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# The LaMa source weights, for exporting the eraser model (see scripts/).
+big-lama.zip

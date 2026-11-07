@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { ChevronDownIcon } from '../icons.tsx'
 
 type FieldProps = {
@@ -107,6 +107,8 @@ type RangeProps = {
 }
 
 export function Range({ id, value, min, max, step, onChange }: RangeProps) {
+  // How far along the track the value is (0–1); the track is filled up to here.
+  const progress = max > min ? (Math.min(Math.max(value, min), max) - min) / (max - min) : 0
   return (
     <input
       id={id}
@@ -116,7 +118,8 @@ export function Range({ id, value, min, max, step, onChange }: RangeProps) {
       step={step}
       value={value}
       onChange={(event) => onChange(event.target.valueAsNumber)}
-      className="w-full cursor-pointer accent-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+      style={{ '--progress': progress } as CSSProperties}
+      className="range-slider w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
     />
   )
 }

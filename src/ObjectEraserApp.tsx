@@ -6,12 +6,15 @@ import lakeThumb from './assets/hero-before.webp'
 import cat from './assets/samples/cat.webp'
 import catThumb from './assets/samples/cat-thumb.webp'
 import { primaryButton, secondaryButton } from './components/buttonStyles.ts'
-import { EmptyState, type Sample } from './components/EmptyState.tsx'
+import { EmptyState, SampleImages, type Sample } from './components/EmptyState.tsx'
 import { EraserStage, type EraserJob } from './components/eraser/EraserStage.tsx'
 import { DownloadIcon, LockIcon, MaximizeIcon } from './components/icons.tsx'
+import { MascotTips } from './components/MascotTips.tsx'
+import { Ouroboro } from './components/Ouroboro.tsx'
 import { SiteFooter } from './components/SiteFooter.tsx'
 import { SiteHeader } from './components/SiteHeader.tsx'
 import { Notice } from './components/upscaler/Notice.tsx'
+import { eraserTips } from './content/eraserTips.ts'
 import { handOffImage, handoffParam } from './lib/handoff.ts'
 import {
   acceptAttribute,
@@ -291,12 +294,10 @@ export function ObjectEraserApp() {
             </p>
           </div>
 
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:grid-rows-[auto_1fr]">
             <div className="min-w-0 space-y-4">
-              <Notice tone="info">
-                Preview: the AI isn't connected yet, so erased areas are filled by blending the
-                colors around them. Real results from {eraserModel.label} will look much better.
-              </Notice>
+              {!image && <SampleImages onFile={openFile} samples={samples} />}
+
               {error && <Notice tone="error">{error}</Notice>}
               {image && current ? (
                 <EraserStage
@@ -320,7 +321,7 @@ export function ObjectEraserApp() {
                   onRemove={() => reset(null)}
                 />
               ) : (
-                <EmptyState onFile={openFile} samples={samples} />
+                <EmptyState onFile={openFile} />
               )}
               <input
                 ref={replaceInputRef}
@@ -337,7 +338,7 @@ export function ObjectEraserApp() {
 
             <aside
               aria-label="How to erase and download"
-              className="flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10"
+              className="flex flex-col rounded-2xl bg-white shadow-xs ring-1 ring-slate-900/10 lg:row-span-2"
             >
               <div className="space-y-6 p-5 sm:p-6">
                 <div className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-900/5">
@@ -411,7 +412,11 @@ export function ObjectEraserApp() {
                   disabled={!canExport}
                   className={`${primaryButton} h-12 w-full`}
                 >
-                  <DownloadIcon className="size-4" />
+                  {exporting === 'download' ? (
+                    <Ouroboro className="size-4" />
+                  ) : (
+                    <DownloadIcon className="size-4" />
+                  )}
                   {exporting === 'download'
                     ? 'Preparing…'
                     : `Download${image ? ` ${formatLabels[image.format]}` : ''}`}
@@ -422,7 +427,11 @@ export function ObjectEraserApp() {
                   disabled={!canExport}
                   className={`${secondaryButton} h-11 w-full`}
                 >
-                  <MaximizeIcon className="size-4" />
+                  {exporting === 'upscale' ? (
+                    <Ouroboro className="size-4" />
+                  ) : (
+                    <MaximizeIcon className="size-4" />
+                  )}
                   {exporting === 'upscale' ? 'Opening the upscaler…' : 'Upscale this'}
                 </button>
                 <p className="flex items-center justify-center gap-2 text-center text-sm text-slate-500">
@@ -431,11 +440,21 @@ export function ObjectEraserApp() {
                 </p>
               </div>
             </aside>
+
+            {/* Mira, under the image on the left. On large screens the card on the right spans
+                both rows, so she fills the space beside a tall card without ever covering the
+                image; on small screens she comes after the card. */}
+            <div className="lg:col-start-1">
+              <MascotTips
+                tips={eraserTips}
+                context={{ image, job, strokes: snapshot.strokes.length, erasedCount }}
+              />
+            </div>
           </div>
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter tight />
     </div>
   )
 }

@@ -41,8 +41,7 @@ export const tools: Tool[] = [
     tagline: 'Brush away unwanted things',
     href: '/remove-objects',
     Icon: EraserIcon,
-    // The page works, but the AI isn't connected yet (src/lib/objectEraser.ts).
-    available: false,
+    available: true,
   },
 ]
 

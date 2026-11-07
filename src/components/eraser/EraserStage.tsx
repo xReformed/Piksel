@@ -3,6 +3,7 @@ import { formatBytes, formatMB, type LoadedImage } from '../../lib/image.ts'
 import { brushSizeRange, type EraserStage as Stage, type Stroke } from '../../lib/objectEraser.ts'
 import { primaryButton, secondaryButton } from '../buttonStyles.ts'
 import { BrushIcon, EraserIcon, EyeIcon, RedoIcon, UndoIcon } from '../icons.tsx'
+import { Ouroboro } from '../Ouroboro.tsx'
 import { ProgressFooter } from '../ProgressFooter.tsx'
 import { Range } from '../upscaler/controls.tsx'
 import { EraserCanvas } from './EraserCanvas.tsx'
@@ -201,10 +202,7 @@ export function EraserStage({
         {job.status === 'running' && (
           <div className="pointer-events-none absolute inset-x-0 top-4 flex justify-center">
             <p className={pillClass}>
-              <span
-                aria-hidden="true"
-                className="size-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"
-              />
+              <Ouroboro />
               {job.stage.name === 'downloading' ? 'Downloading AI model…' : 'Erasing…'}
             </p>
           </div>

@@ -7,5 +7,5 @@ import { NotFoundApp } from './NotFoundApp.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <NotFoundApp />
-  </StrictMode>,
+  </StrictMode>
 )

@@ -1,4 +1,5 @@
 import { secondaryButton } from './buttonStyles.ts'
+import { Ouroboro } from './Ouroboro.tsx'
 
 type ProgressFooterProps = {
   // Names the progress bar for screen readers, e.g. "Upscaling progress".
@@ -8,6 +9,8 @@ type ProgressFooterProps = {
   // Null shows a pulsing bar, for steps whose length isn't known.
   percent: number | null
   notice?: string | null
+  // Shows the spinner beside the title, for tools with no working message over the image.
+  spinner?: boolean
   onCancel: () => void
 }
 
@@ -18,6 +21,7 @@ export function ProgressFooter({
   detail,
   percent,
   notice,
+  spinner = false,
   onCancel,
 }: ProgressFooterProps) {
   return (
@@ -38,10 +42,13 @@ export function ProgressFooter({
         )}
       </div>
       <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0 text-sm">
-          <p className="font-medium text-slate-950">{title}</p>
-          <p className="text-slate-500 tabular-nums">{detail}</p>
-          {notice && <p className="mt-1 text-amber-700">{notice}</p>}
+        <div className="flex min-w-0 items-center gap-3">
+          {spinner && <Ouroboro className="size-7 text-brand-600" />}
+          <div className="min-w-0 text-sm">
+            <p className="font-medium text-slate-950">{title}</p>
+            <p className="text-slate-500 tabular-nums">{detail}</p>
+            {notice && <p className="mt-1 text-amber-700">{notice}</p>}
+          </div>
         </div>
         <button
           type="button"

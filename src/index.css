@@ -26,6 +26,22 @@
   --animate-marquee-reverse: marquee 50s linear infinite reverse;
   --animate-shimmer: shimmer 1.8s ease-in-out infinite;
   --animate-tip-in: tip-in 350ms ease-out;
+  --animate-ouroboro: ouroboro 3s ease infinite;
+
+  /* The Ouroboro spinner's two half-discs: wait, turn in, wait, turn back out. */
+  @keyframes ouroboro {
+    0%,
+    25% {
+      transform: rotate(0deg);
+    }
+    50%,
+    75% {
+      transform: rotate(180deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 
   @keyframes shimmer {
     from {
@@ -71,6 +87,91 @@
     linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
   background-size: 56px 56px;
+}
+
+/* The settings sliders: a rounded track filled in purple up to a round white handle. The filled
+   part comes from --progress (0–1), set by the Range component; it's measured from the handle's
+   center so the fill always meets the handle. */
+@utility range-slider {
+  --thumb: 1.125rem;
+  --track: 0.375rem;
+  --fill: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--progress, 0));
+
+  appearance: none;
+  height: var(--thumb);
+  background: transparent;
+
+  &::-webkit-slider-runnable-track {
+    height: var(--track);
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-brand-600) var(--fill),
+      var(--color-slate-200) var(--fill)
+    );
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    margin-top: calc((var(--track) - var(--thumb)) / 2);
+    width: var(--thumb);
+    height: var(--thumb);
+    border: 2px solid var(--color-brand-600);
+    border-radius: 9999px;
+    background: white;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+    transition:
+      transform 150ms,
+      box-shadow 150ms;
+  }
+
+  &::-moz-range-track {
+    height: var(--track);
+    border-radius: 9999px;
+    background: var(--color-slate-200);
+  }
+
+  &::-moz-range-progress {
+    height: var(--track);
+    border-radius: 9999px;
+    background: var(--color-brand-600);
+  }
+
+  &::-moz-range-thumb {
+    box-sizing: border-box;
+    width: var(--thumb);
+    height: var(--thumb);
+    border: 2px solid var(--color-brand-600);
+    border-radius: 9999px;
+    background: white;
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+    transition:
+      transform 150ms,
+      box-shadow 150ms;
+  }
+
+  &:enabled:hover::-webkit-slider-thumb,
+  &:enabled:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+  }
+
+  &:enabled:hover::-moz-range-thumb,
+  &:enabled:active::-moz-range-thumb {
+    transform: scale(1.15);
+  }
+
+  /* The focus ring goes around the handle rather than the whole slider. */
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand-600) 25%, transparent);
+  }
+
+  &:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand-600) 25%, transparent);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

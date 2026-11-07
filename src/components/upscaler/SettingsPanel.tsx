@@ -17,6 +17,8 @@ type SettingsPanelProps = {
   device: DeviceInfo
   hasAlpha: boolean
   disabled: boolean
+  // Called when the Advanced settings heading is clicked, before the section opens or closes.
+  onAdvancedToggle?: (summary: HTMLElement, opening: boolean) => void
 }
 
 const formatHints: Record<OutputFormat, string> = {
@@ -24,6 +26,9 @@ const formatHints: Record<OutputFormat, string> = {
   jpeg: 'Small files, but no transparency.',
   webp: 'Small files that keep transparency.',
 }
+
+// The one model with a denoise setting.
+const denoiseModel = models.find((model) => model.supportsDenoise) ?? models[0]
 
 const tileSizes = Array.from({ length: 15 }, (_, index) => 64 + index * 32) // 64–512
 
@@ -34,6 +39,7 @@ export function SettingsPanel({
   device,
   hasAlpha,
   disabled,
+  onAdvancedToggle,
 }: SettingsPanelProps) {
   const modelChosen = settings.model !== 'auto'
   const customScale = settings.customScale
@@ -133,7 +139,13 @@ export function SettingsPanel({
       )}
 
       <details className="group border-t border-slate-200 pt-5">
-        <summary className="flex cursor-pointer list-none items-center justify-between rounded-md text-sm font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden">
+        <summary
+          onClick={(event) => {
+            const details = event.currentTarget.parentElement as HTMLDetailsElement
+            onAdvancedToggle?.(event.currentTarget, !details.open)
+          }}
+          className="flex cursor-pointer list-none items-center justify-between rounded-md text-sm font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 [&::-webkit-details-marker]:hidden"
+        >
           Advanced settings
           <ChevronDownIcon className="size-4 text-slate-400 transition-transform group-open:rotate-180" />
         </summary>
@@ -216,21 +228,28 @@ export function SettingsPanel({
             )}
           </Field>
 
-          {plan.model.supportsDenoise && (
-            <Field label="Denoise strength" hint="How strongly grain and JPEG noise are removed.">
-              <Segmented
-                label="Denoise strength"
-                value={settings.denoise}
-                options={[
-                  { value: 'off', label: 'Off' },
-                  { value: 'low', label: 'Low' },
-                  { value: 'medium', label: 'Med' },
-                  { value: 'high', label: 'High' },
-                ]}
-                onChange={(denoise) => onChange({ denoise })}
-              />
-            </Field>
-          )}
+          {/* Shown even when the model can't denoise, so people can find out how to get it. */}
+          <Field
+            label="Denoise strength"
+            hint={
+              plan.model.supportsDenoise
+                ? 'How strongly grain and JPEG noise are removed.'
+                : `Only ${denoiseModel.name} can remove noise. Choose it under Model${settings.imageType === 'photo' && !modelChosen ? ', or set Speed to Fast' : ''}.`
+            }
+          >
+            <Segmented
+              label="Denoise strength"
+              value={settings.denoise}
+              disabled={!plan.model.supportsDenoise}
+              options={[
+                { value: 'off', label: 'Off' },
+                { value: 'low', label: 'Low' },
+                { value: 'medium', label: 'Med' },
+                { value: 'high', label: 'High' },
+              ]}
+              onChange={(denoise) => onChange({ denoise })}
+            />
+          </Field>
 
           {hasAlpha && (
             <Field
